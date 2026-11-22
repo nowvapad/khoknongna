@@ -1,0 +1,978 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>สมุดพัฒนาการ โคก หนอง นา พอเพียง</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Mitr:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: sticky green header band, one centred column of cards; palette from soil, water and rice field */
+:root{
+  --bg:#f5f2e9;--card:#fff;--surface:#fff;--field:#fffdf8;--sunk:#f6f3ea;--chip:#f0ede3;
+  --ink:#2a2924;--mute:#6d6b60;--line:#e3ded0;--line-2:#cfc8b4;--pre:#c9b89c;
+  --green:#3d7a37;--green-d:#2b5a27;--green-l:#e4f0de;--green-b:#b9d9ac;
+  --water:#2c6fa3;--water-l:#e1edf7;--water-b:#c5dbee;
+  --soil:#94643a;--soil-l:#f3e8db;
+  --gold:#b98613;--gold-l:#fbf1d8;--gold-b:#efdcaa;--gold-ink:#8a6410;
+  --red:#b3443a;--red-l:#f8e4e1;
+  --hero-a:#fffaf0;--hero-b:#eef6e9;--head:#2b5a27;
+  --lv1:#a9825c;--lv2:#d1a23a;--lv3:#5c9a45;--lv4:#2b6d2c;
+  --r:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(60,50,20,.06);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#191a16;--card:#23241f;--surface:#23241f;--field:#1e1f1a;--sunk:#2a2b25;--chip:#302f28;
+  --ink:#ece8dc;--mute:#a9a596;--line:#3a3a32;--line-2:#56544a;--pre:#857760;
+  --green:#4f8f47;--green-d:#a5d495;--green-l:#24331f;--green-b:#3e5a35;
+  --water:#4f93c8;--water-l:#1d2b38;--water-b:#2f4a62;
+  --soil:#d4a575;--soil-l:#33281d;
+  --gold:#d9a93a;--gold-l:#342b17;--gold-b:#5a4a22;--gold-ink:#e6c46c;
+  --red:#d8695f;--red-l:#3a201d;
+  --hero-a:#24261f;--hero-b:#1f2b1d;--head:#1f421c;
+  --shadow:0 1px 2px rgba(0,0,0,.3);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#191a16;--card:#23241f;--surface:#23241f;--field:#1e1f1a;--sunk:#2a2b25;--chip:#302f28;
+  --ink:#ece8dc;--mute:#a9a596;--line:#3a3a32;--line-2:#56544a;--pre:#857760;
+  --green:#4f8f47;--green-d:#a5d495;--green-l:#24331f;--green-b:#3e5a35;
+  --water:#4f93c8;--water-l:#1d2b38;--water-b:#2f4a62;
+  --soil:#d4a575;--soil-l:#33281d;
+  --gold:#d9a93a;--gold-l:#342b17;--gold-b:#5a4a22;--gold-ink:#e6c46c;
+  --red:#d8695f;--red-l:#3a201d;
+  --hero-a:#24261f;--hero-b:#1f2b1d;--head:#1f421c;
+  --shadow:0 1px 2px rgba(0,0,0,.3);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--head)}
+:focus-visible{outline:2px solid var(--water);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 "Sarabun",system-ui,sans-serif}
+h1,h2,h3,h4{font-family:"Mitr","Sarabun",sans-serif;font-weight:500;line-height:1.3;margin:0 0 .5em}
+h2{font-size:1.35rem}h3{font-size:1.1rem}h4{font-size:1rem}
+p{margin:.3em 0 .7em}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--water)}
+.muted{color:var(--mute)}.small{font-size:.88rem}.tiny{font-size:.78rem}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* header */
+header{background:linear-gradient(135deg,var(--head),#3d7a37 55%,#2c6fa3);color:#fff;position:sticky;top:env(safe-area-inset-top,0px);z-index:20;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.hbar{display:flex;align-items:center;gap:12px;padding:10px 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;flex:1;min-width:220px}
+.logo{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:22px;flex:none}
+.brand h1{font-size:1.1rem;margin:0}
+.brand .sub{font-size:.8rem;opacity:.85}
+.ctrl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;background:rgba(0,0,0,.2);border-radius:999px;padding:3px}
+.seg button{border:0;background:none;color:#fff;padding:5px 12px;border-radius:999px;cursor:pointer;font-size:.88rem}
+.seg button.on{background:var(--surface);color:var(--green-d);font-weight:600}
+header select{border:0;border-radius:999px;padding:6px 10px;background:var(--surface);color:var(--ink);font-size:.88rem;max-width:210px}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-bottom:0}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{flex:none;border:0;background:none;color:rgba(255,255,255,.85);padding:9px 14px 10px;cursor:pointer;border-radius:10px 10px 0 0;font-size:.93rem;white-space:nowrap}
+nav.tabs button.on{background:var(--bg);color:var(--green-d);font-weight:600}
+nav.tabs .num{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.22);font-size:.75rem;margin-right:5px}
+nav.tabs button.on .num{background:var(--green);color:#fff}
+@media(max-width:700px){header{position:static}.brand .sub{display:none}.brand h1{font-size:1rem}.hbar{gap:8px}}
+.badge{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:var(--red);color:#fff;font-size:.72rem;line-height:18px;text-align:center;margin-left:4px}
+
+main{padding:20px 0 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:16px}
+.card.flat{box-shadow:none}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.between{justify-content:space-between}
+.btn{border:1px solid var(--line);background:var(--surface);padding:8px 16px;border-radius:10px;cursor:pointer;font-weight:600;font-size:.93rem;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--line-2)}
+.btn.pri{background:var(--green);border-color:var(--green);color:#fff}
+.btn.pri:hover,.btn.blue:hover{filter:brightness(.92)}
+.btn.blue{background:var(--water);border-color:var(--water);color:#fff}
+.btn.sm{padding:5px 10px;font-size:.84rem;border-radius:8px}
+.btn.ghost{background:none;border-color:transparent;color:var(--water)}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:999px;font-size:.8rem;background:var(--chip);color:var(--ink);white-space:nowrap}
+.chip.k{background:var(--water-l);color:var(--water)}
+.chip.s{background:var(--soil-l);color:var(--soil)}
+.chip.a{background:var(--gold-l);color:var(--gold-ink)}
+.chip.ok{background:var(--green-l);color:var(--green-d)}
+.chip.warn{background:var(--gold-l);color:var(--gold-ink)}
+.chip.bad{background:var(--red-l);color:var(--red)}
+button.chip{border:1px dashed var(--line-2);cursor:pointer;background:var(--surface)}
+button.chip:hover{border-color:var(--green);color:var(--green-d)}
+label.f{display:block;font-weight:600;font-size:.9rem;margin:10px 0 4px}
+input[type=text],input[type=url],select.f,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--field)}
+textarea{min-height:70px;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--green-b);outline-offset:0;border-color:var(--green)}
+.hint{font-size:.8rem;color:var(--mute);margin-top:3px}
+hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+
+/* hero */
+.hero{background:linear-gradient(120deg,var(--hero-a),var(--hero-b));border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:16px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
+.hero h2{font-size:1.5rem;margin-bottom:.2em}
+.unitpill{display:inline-block;background:var(--green);color:#fff;border-radius:999px;padding:2px 12px;font-size:.8rem;margin-bottom:8px}
+@media(max-width:640px){.hero{grid-template-columns:1fr}.hero svg{display:none}}
+
+/* cycle */
+.cycle{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;counter-reset:c}
+.step{position:relative;border:1px solid var(--line);border-radius:12px;padding:12px 12px 12px;background:var(--surface);cursor:pointer;transition:.15s}
+.step:hover{border-color:var(--green);transform:translateY(-1px)}
+.step .ic{font-size:22px}
+.step b{display:block;font-family:Mitr;font-weight:500;font-size:.95rem;margin:4px 0 2px}
+.step .st{font-size:.78rem}
+.step.done{background:var(--green-l);border-color:var(--green-b)}
+.step.now{border:2px solid var(--gold);background:var(--gold-l)}
+.step:not(:last-child)::after{content:"➜";position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:var(--line-2);font-size:14px;z-index:1}
+@media(max-width:760px){.cycle{grid-template-columns:1fr 1fr}.step::after{display:none}}
+
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.stat .v{font-family:Mitr;font-size:1.7rem;line-height:1.1}
+.stat .l{font-size:.82rem;color:var(--mute)}
+
+.todo{list-style:none;padding:0;margin:0}
+.todo li{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px dashed var(--line)}
+.todo li:last-child{border:0}
+.todo .dot{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--gold-l);font-size:14px}
+
+/* objective + levels */
+.obj{border:1px solid var(--line);border-radius:var(--r);padding:16px;background:var(--surface);margin-bottom:14px}
+.obj h4{display:flex;gap:8px;align-items:flex-start}
+.lvls{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+@media(max-width:700px){.lvls{grid-template-columns:1fr 1fr}}
+.lv{border:2px solid var(--line);border-radius:12px;padding:10px;background:var(--field);cursor:pointer;text-align:left;font-size:.86rem;line-height:1.45;display:flex;flex-direction:column;gap:4px}
+.lv .t{font-family:Mitr;font-size:.92rem;display:flex;align-items:center;gap:6px}
+.lv:hover{border-color:var(--green-b)}
+.lv.on{border-color:var(--green);background:var(--green-l);box-shadow:0 0 0 3px rgba(61,122,55,.15)}
+.lvtag{display:inline-flex;align-items:center;gap:4px;font-size:.8rem;padding:1px 9px;border-radius:999px;color:#fff;white-space:nowrap}
+.l1{background:var(--lv1)}.l2{background:var(--lv2)}.l3{background:var(--lv3)}.l4{background:var(--lv4)}.l0{background:var(--line-2)}
+
+.phase{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.phase button{border:0;background:none;padding:8px 16px;cursor:pointer;font-weight:600}
+.phase button.on{background:var(--water);color:#fff}
+
+.q{border-top:1px dashed var(--line);padding:12px 0}
+.q:first-of-type{border-top:0}
+.opts{display:grid;gap:6px;margin-top:6px}
+.opt{border:1px solid var(--line);background:var(--field);border-radius:10px;padding:8px 12px;text-align:left;cursor:pointer}
+.opt:hover:not([disabled]){border-color:var(--water)}
+.opt.right{background:var(--green-l);border-color:var(--green)}
+.opt.wrong{background:var(--red-l);border-color:var(--red)}
+.opt[disabled]{cursor:default}
+.explain{margin-top:6px;padding:8px 12px;border-radius:10px;background:var(--water-l);font-size:.88rem}
+
+/* bars */
+.bars{display:grid;gap:12px}
+.barrow .lab{display:flex;justify-content:space-between;font-size:.86rem;margin-bottom:3px;gap:8px}
+.track{height:12px;background:var(--sunk);border-radius:6px;overflow:hidden;margin:3px 0}
+.fill{height:100%;border-radius:6px;transition:width .5s}
+.fill.pre{background:var(--pre)}
+.fill.post{background:var(--green)}
+.fill.tch{background:var(--water)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--mute)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+
+/* portfolio */
+.cover{display:flex;gap:8px;flex-wrap:wrap}
+.cov{flex:1;min-width:150px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
+.cov .n{font-family:Mitr;font-size:1.3rem}
+.cov .row{flex-wrap:nowrap;align-items:flex-start}.cov .row>span:first-child{flex:1;min-width:0}
+.cov.empty{background:var(--gold-l);border-color:var(--gold-b)}
+.timeline{position:relative;padding-left:22px}
+.timeline::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--line-2)}
+.entry{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:14px;box-shadow:var(--shadow)}
+.entry::before{content:"";position:absolute;left:-20px;top:20px;width:12px;height:12px;border-radius:50%;background:var(--green);border:3px solid var(--bg)}
+.entry .top{display:grid;grid-template-columns:160px 1fr;gap:14px}
+@media(max-width:560px){.entry .top{grid-template-columns:1fr}}
+.thumb{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:var(--sunk)}
+.thumb.none{display:grid;place-items:center;font-size:36px}
+.refl{display:grid;gap:6px;margin-top:6px}
+.refl div{font-size:.9rem;padding:6px 10px;border-radius:8px;background:var(--sunk)}
+.refl b{font-family:Mitr;font-weight:500;font-size:.82rem;color:var(--soil);display:block}
+.addbox{border:2px dashed #c9d9be;background:#fbfdf8}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:14px;text-align:center;background:var(--field);cursor:pointer;display:block}
+.drop img{max-height:150px;border-radius:8px;display:block;margin:0 auto 6px}
+.checks{display:flex;gap:8px;flex-wrap:wrap}
+.checks label{border:1px solid var(--line);border-radius:10px;padding:6px 10px;cursor:pointer;font-size:.86rem;background:var(--surface);display:flex;gap:6px;align-items:center}
+.checks input:checked+span{font-weight:700;color:var(--green-d)}
+
+/* growth path */
+.paths{display:grid;gap:10px}
+.prow{display:grid;grid-template-columns:200px 1fr;gap:10px;align-items:center;padding-bottom:10px;border-bottom:1px dashed var(--line)}
+.prow:last-child{border:0;padding-bottom:0}
+.prow>*{min-width:0}
+@media(max-width:640px){.prow{grid-template-columns:1fr}}
+.path{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.node{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;padding:5px 8px;border:1px solid var(--line);border-radius:10px;background:var(--field)}
+.node.tch{border-color:var(--water-b);background:var(--water-l)}
+.arr{color:var(--mute)}
+.ia{display:grid;grid-template-columns:150px 1fr auto;gap:8px;align-items:center;font-size:.86rem;padding:4px 0}
+.ia>*{min-width:0}
+@media(max-width:520px){.ia{grid-template-columns:1fr auto}.ia .tracks{grid-column:1/-1}}
+
+/* feedback */
+.fb{border-radius:12px;padding:12px 14px;margin-top:10px;font-size:.92rem}
+.fb.t{background:var(--water-l);border:1px solid var(--water-b)}
+.fb.p{background:var(--gold-l);border:1px solid var(--gold-b)}
+.fb.r{background:var(--green-l);border:1px solid var(--green-b)}
+.fb .who{font-weight:700;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.fb .k{font-family:Mitr;font-weight:500;font-size:.82rem;display:block;margin-top:6px}
+.fb.t .k{color:var(--water)}
+.fb.p .k{color:var(--gold-ink)}
+.subtabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.subtabs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;cursor:pointer;font-weight:600;font-size:.9rem}
+.subtabs button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.scorepick{display:flex;gap:6px;flex-wrap:wrap}
+.scorepick label{cursor:pointer}
+.scorepick input{position:absolute;opacity:0;pointer-events:none}
+.scorepick span{display:inline-block;border:2px solid var(--line);border-radius:10px;padding:4px 10px;font-size:.84rem;background:var(--surface)}
+.scorepick input:checked+span{border-color:var(--water);background:var(--water-l);font-weight:700}
+.scorepick input:focus-visible+span{outline:2px solid var(--water)}
+.form3{display:grid;gap:4px}
+
+/* table */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:640px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}
+th{background:var(--sunk);font-family:Mitr;font-weight:500;font-size:.82rem}
+td:first-child,th:first-child{text-align:left}
+tr:last-child td{border-bottom:0}
+.pair{display:inline-flex;gap:3px;align-items:center}
+.mini{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;color:#fff;font-weight:700;font-size:.8rem}
+.mini.self{background:var(--green)}
+.mini.tch{background:var(--water)}
+.mini.na{background:var(--line-2)}
+
+details.about{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px}
+details.about summary{cursor:pointer;font-family:Mitr;font-weight:500}
+details.about li{margin-bottom:4px}
+
+.empty-state{text-align:center;padding:26px;color:var(--mute)}
+.empty-state .big{font-size:40px}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:12px;opacity:0;transition:.25s;z-index:50;font-size:.92rem;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%)}
+footer{padding:20px 0 40px;color:var(--mute);font-size:.82rem;text-align:center}
+.save-note{font-size:.8rem;color:var(--green-d)}
+
+@media print{
+  header,footer,.noprint,.btn{display:none!important}
+  body{background:var(--surface)}
+  .card,.entry{box-shadow:none;break-inside:avoid}
+  main{padding:0}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="hbar">
+      <div class="brand">
+        <div class="logo">🌾</div>
+        <div>
+          <h1>สมุดพัฒนาการ โคก หนอง นา พอเพียง</h1>
+          <div class="sub">ระบบประเมินเพื่อพัฒนาการเรียนรู้ · เรียนรู้ผ่านบอร์ดเกม โคก หนอง นา พอเพียง</div>
+        </div>
+      </div>
+      <div class="ctrl">
+        <div class="seg" role="group" aria-label="บทบาท">
+          <button data-act="role" data-v="student" id="r-student">นักศึกษา</button>
+          <button data-act="role" data-v="teacher" id="r-teacher">อาจารย์</button>
+        </div>
+        <select id="who" aria-label="เลือกนักศึกษา"></select>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs"></nav>
+  </div>
+</header>
+
+<main><div class="wrap" id="view"></div></main>
+
+<footer class="wrap">
+  ต้นแบบนวัตกรรมการประเมินเพื่อพัฒนาการเรียนรู้ด้วยเทคโนโลยีดิจิทัล · ข้อมูลบันทึกไว้ในเบราว์เซอร์เครื่องนี้
+  · <button class="btn ghost sm" data-act="reset">ล้างข้อมูลกลับเป็นตัวอย่าง</button>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ ข้อมูลหลักสูตร ============ */
+const UNIT = {
+  name:'หน่วยที่ 3 เรียนรู้โคกหนองนาผ่านบอร์ดเกม "โคก หนอง นา พอเพียง"',
+  course:'รายวิชาศาสตร์พระราชาเพื่อการพัฒนาท้องถิ่น · นักศึกษาคณะครุศาสตร์ ชั้นปีที่ 1',
+  hours:'2 สัปดาห์ · เล่นเกมรอบที่ 1 → ถอดบทเรียน → รับข้อเสนอแนะ → เล่นเกมรอบที่ 2'
+};
+const LEVELS = [
+  null,
+  {n:1,name:'เมล็ด',icon:'🌰'},
+  {n:2,name:'ต้นกล้า',icon:'🌱'},
+  {n:3,name:'ต้นไม้',icon:'🌳'},
+  {n:4,name:'ออกดอกออกผล',icon:'🍎'}
+];
+const PASS = 3;
+const OBJ = [
+  {id:'o1',dom:'K',clo:'CLO1',short:'หลักการโคกหนองนา',
+   text:'อธิบายสัดส่วน 30 : 30 : 30 : 10 และหน้าที่ของหนอง นา และป่า 5 ระดับ โดยเชื่อมกับสิ่งที่เกิดขึ้นในเกมได้',
+   lv:['','ฉันยังบอกสัดส่วนหรือหน้าที่ของแต่ละส่วนไม่ได้',
+       'ฉันบอกสัดส่วนได้ แต่ยังอธิบายไม่ได้ว่าแต่ละส่วนช่วยกันอย่างไร',
+       'ฉันอธิบายหน้าที่ของหนอง นา และป่า 5 ระดับได้ และยกเหตุการณ์ในเกมประกอบ',
+       'ฉันอธิบายได้ว่าทำไมสัดส่วนต้องปรับตามภูมิสังคม และเชื่อมผลในเกมกับพื้นที่จริงได้'],
+   tip:'เปิดแถบวัดสัดส่วนในเกมขณะวางผังให้ใกล้ 6 : 6 : 6 : 2 ช่อง แล้วสังเกตว่าคะแนนแต่ละด้านเปลี่ยนอย่างไร'},
+  {id:'o2',dom:'S',clo:'CLO3',short:'การวางผังตามภูมิสังคม',
+   text:'วางผังแปลงในเกมตามความลาดชันและทิศทางน้ำ โดยวางหนองในที่ต่ำ พร้อมให้เหตุผลได้',
+   lv:['','ฉันวางผังโดยไม่ดูความลาดของแปลง',
+       'ฉันวางหนองในที่ต่ำได้บางส่วน แต่นาหรือป่ายังไม่สัมพันธ์กับทางน้ำ',
+       'ฉันวางหนองในที่ต่ำ นาติดหนองหรือคลองไส้ไก่ และป่าบนที่สูง พร้อมบอกเหตุผล',
+       'ฉันปรับผังได้เมื่อเงื่อนไขเปลี่ยน และบอกข้อเสียของผังทางเลือกอื่นได้'],
+   tip:'ก่อนวางผัง ดูแถวบนสุด (ที่สูง) กับแถวล่างสุด (ที่ต่ำ) แล้วลองวางหนองแถวล่างและนาติดหนอง'},
+  {id:'o3',dom:'S',clo:'CLO4',short:'การตัดสินใจตามหลักความพอเพียง',
+   text:'วิเคราะห์และตัดสินใจต่อเหตุการณ์ในเกม เช่น ภัยแล้ง น้ำป่า การ์ดล่อใจ และสินเชื่อ โดยอ้างหลัก 3 ห่วง 2 เงื่อนไขได้',
+   lv:['','ฉันตัดสินใจตามความรู้สึก และยังบอกเหตุผลไม่ได้',
+       'ฉันบอกผลของการตัดสินใจได้ แต่ยังไม่เชื่อมกับหลัก 3 ห่วง 2 เงื่อนไข',
+       'ฉันให้เหตุผลการตัดสินใจด้วยความพอประมาณ ความมีเหตุผล และภูมิคุ้มกันได้',
+       'ฉันวางแผนรับมือความเสี่ยงล่วงหน้าหลายฤดู และเชื่อมกับการตัดสินใจในชีวิตจริงได้'],
+   tip:'ก่อนตอบการ์ดล่อใจหรือรับสินเชื่อ ถามตัวเอง 3 ข้อ: พอประมาณไหม มีเหตุผลไหม มีภูมิคุ้มกันถ้าเกิดแล้งไหม'},
+  {id:'o4',dom:'A',clo:'CLO6',short:'เอามื้อและการแบ่งปัน',
+   text:'ร่วมมือกับทีม เอามื้อช่วยครัวเรือนอื่น และแบ่งปันทรัพยากรเมื่อเพื่อนขาดแคลนได้',
+   lv:['','ฉันเล่นเพื่อคะแนนของตัวเองเป็นหลัก',
+       'ฉันช่วยทีมเมื่อมีคนขอ',
+       'ฉันทำบทบาทในทีมครบ เอามื้อหรือแบ่งปันอย่างน้อย 1 ครั้ง และอธิบายได้ว่าช่วยทั้งชุมชนอย่างไร',
+       'ฉันชวนทีมวางแผนช่วยเหลือกัน และให้ข้อเสนอแนะเพื่อนอย่างสร้างสรรค์'],
+   tip:'ลองเอามื้อหรือแบ่งปันอาหารในฤดูแล้ง แล้วสังเกตคะแนนพอร่มเย็นของทั้งทีม'}
+];
+const QUIZ = [
+  {q:'ในเกมมีที่ดิน 20 ช่อง สัดส่วนหนอง : นา : โคก : ที่อยู่อาศัย ข้อใดตรงกับ 30 : 30 : 30 : 10',o:['5 : 5 : 5 : 5','6 : 6 : 6 : 2','8 : 8 : 2 : 2','2 : 6 : 6 : 6'],a:1,obj:'o1',
+   ex:'30 : 30 : 30 : 10 ของ 20 ช่อง เท่ากับ 6 : 6 : 6 : 2 ช่อง เกมจึงให้โบนัสเมื่อผังใกล้สัดส่วนนี้'},
+  {q:'ทำไมหนองที่ขุดในที่ต่ำของแปลงจึงเก็บน้ำได้มากกว่า',o:['เพราะดินที่ต่ำขุดง่ายกว่า','เพราะน้ำฝนไหลจากที่สูงลงมารวมที่ต่ำเองตามธรรมชาติ','เพราะที่ต่ำมีแดดน้อย','เพราะกติกาเกมกำหนดไว้เท่านั้น'],a:1,obj:'o2',
+   ex:'น้ำไหลจากที่สูงลงที่ต่ำ หนองที่ต่ำจึงรับน้ำได้เองโดยไม่ต้องสูบ ในเกมหนองที่ต่ำเก็บน้ำได้ 4 หน่วย ที่สูงเก็บได้ 2 หน่วย'},
+  {q:'การปลูกพืชเชิงเดี่ยวเต็มแปลงตามการ์ด "พ่อค้าชวนปลูกพืชเชิงเดี่ยว" ขาดหลักใดมากที่สุด',o:['ความรู้','ภูมิคุ้มกัน เพราะถ้าราคาตกหรือเกิดแล้งจะไม่มีอย่างอื่นรองรับ','คุณธรรม','ความขยัน'],a:1,obj:'o3',
+   ex:'การปลูกพืชชนิดเดียวทำให้ไม่มีภูมิคุ้มกันต่อความเสี่ยง ส่วนโคกหนองนากระจายความเสี่ยงด้วยพืชหลายชนิดและน้ำสำรอง'},
+  {q:'ข้อใดคือ "2 เงื่อนไข" ในหลัก 3 ห่วง 2 เงื่อนไข',o:['ความพอประมาณ และความมีเหตุผล','ความรู้ และคุณธรรม','ภูมิคุ้มกัน และความรู้','พอกิน และพอใช้'],a:1,obj:'o3',
+   ex:'3 ห่วงคือ ความพอประมาณ ความมีเหตุผล และการมีภูมิคุ้มกันที่ดี ส่วน 2 เงื่อนไขคือ ความรู้ และคุณธรรม'},
+  {q:'คะแนน 4 ด้านในเกม (พอกิน พออยู่ พอใช้ พอร่มเย็น) มาจากหลักใด',o:['บันได 9 ขั้นสู่ความพอเพียง ขั้นพื้นฐาน','ปลูกป่า 3 อย่าง ประโยชน์ 4 อย่าง','สัดส่วน 30 : 30 : 30 : 10','คลองไส้ไก่และหลุมขนมครก'],a:0,obj:'o1',
+   ex:'บันได 9 ขั้นเริ่มจากขั้นพื้นฐาน 4 ขั้น คือ พอกิน พอใช้ พออยู่ พอร่มเย็น เกมจึงวัดความสำเร็จด้วย 4 ด้านนี้แทนเงิน'}
+];
+const QSHORT=['สัดส่วนในเกม 6:6:6:2','หนองในที่ต่ำ','การ์ดล่อใจกับภูมิคุ้มกัน','3 ห่วง 2 เงื่อนไข','บันได 9 ขั้น'];
+function days(a,b){return Math.max(0,Math.round((Date.parse(b)-Date.parse(a))/864e5))}
+const TYPES = {board:'🗺️ ภาพผังแปลงในเกม',score:'📊 ผลคะแนน 4 ด้าน',card:'🃏 การตัดสินใจต่อการ์ด',debrief:'📝 ใบถอดบทเรียน',team:'🤝 บทบาทในทีม / เอามื้อ',link:'🔗 ลิงก์ (Padlet, Canva, คลิป)'};
+const BANK = [
+  'ลองย้อนดูฤดูที่ระบุ แล้วเขียนว่าจะตัดสินใจต่างจากเดิมอย่างไร',
+  'ลองอธิบายเหตุผลด้วยหลัก 3 ห่วง 2 เงื่อนไข',
+  'ลองเชื่อมเหตุการณ์ในเกมกับพื้นที่จริงในชุมชนของเรา',
+  'ลองเทียบผังรอบที่ 1 กับรอบที่ 2 แล้วบอกว่าอะไรทำให้คะแนนเปลี่ยน',
+  'เปิดแถบวัดสัดส่วนในเกม และปรับผังให้ใกล้ 6 : 6 : 6 : 2',
+  'ชวนทีมวางแผนเอามื้อหรือแบ่งปันก่อนฤดูแล้ง'
+];
+
+/* ============ ภาพตัวอย่าง (SVG) ============ */
+function svgURI(s){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s)}
+const ART = {
+  board:(r='1')=>{
+    const L=r==='1'?['PPRRR','RRRRR','RRRRH','RRFEE']:['FFFFH','FFRRH','RRRRP','PPPPP'];
+    const C={P:'#3b82c4',R:'#d2c95a',F:'#3f7f3a',H:'#b07a4a',E:'#d8ccb3'},N={P:'หนอง',R:'นา',F:'ป่า',H:'บ้าน',E:''};
+    let t='';L.forEach((row,y)=>[...row].forEach((k,x)=>{t+=`<rect x="${40+x*48}" y="${34+y*42}" width="44" height="38" rx="5" fill="${C[k]}"/><text x="${62+x*48}" y="${58+y*42}" font-size="12" text-anchor="middle" fill="${k==='R'||k==='E'?'#3a3410':'#fff'}" font-family="sans-serif">${N[k]}</text>`}));
+    return svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240"><rect width="320" height="240" fill="#eef1e4"/><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a2b"/><stop offset="1" stop-color="#7cc4e6"/></linearGradient></defs><rect x="14" y="34" width="14" height="164" rx="7" fill="url(#g)"/>
+    <text x="40" y="24" font-size="13" fill="#5d6b55" font-family="sans-serif">⬆ ที่สูง</text><text x="40" y="226" font-size="13" fill="#5d6b55" font-family="sans-serif">ที่ต่ำ ⬇</text>
+    <text x="280" y="226" font-size="15" text-anchor="end" fill="#2f6b3a" font-family="sans-serif">รอบที่ ${r}</text>${t}</svg>`)},
+  score:(r='1',...v)=>{v=v.map(Number);const lab=['พอกิน','พออยู่','พอใช้','พอร่มเย็น'],col=['#c9a227','#b07a4a','#2c6fa3','#3f7f3a'];let b='';
+    v.forEach((n,i)=>{b+=`<text x="26" y="${80+i*36}" font-size="14" fill="#1f2a1c" font-family="sans-serif">${lab[i]}</text><rect x="106" y="${66+i*36}" width="170" height="18" rx="9" fill="#e3e8d4"/><rect x="106" y="${66+i*36}" width="${n*17}" height="18" rx="9" fill="${col[i]}"/><text x="${284}" y="${80+i*36}" font-size="14" fill="#1f2a1c" font-family="sans-serif">${n}</text>`});
+    return svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240"><rect width="320" height="240" fill="#fbfcf6"/><text x="160" y="38" font-size="17" text-anchor="middle" fill="#2f6b3a" font-family="sans-serif">คะแนนความพอเพียง รอบที่ ${r}</text>${b}<text x="160" y="224" font-size="15" text-anchor="middle" fill="#1f2a1c" font-family="sans-serif">รวม ${v.reduce((a,c)=>a+c,0)} คะแนน (จบ 8 ฤดู)</text></svg>`)},
+  card:(title='การ์ด',sub='')=>svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240"><rect width="320" height="240" fill="#e3e8d4"/>
+    <rect x="80" y="18" width="160" height="204" rx="14" fill="#fbfcf6" stroke="#d9a928" stroke-width="5"/><circle cx="160" cy="78" r="30" fill="#d9a928"/><text x="160" y="88" font-size="28" text-anchor="middle" font-family="sans-serif">🤝</text>
+    <text x="160" y="140" font-size="16" text-anchor="middle" fill="#2f6b3a" font-family="sans-serif">${title}</text><text x="160" y="166" font-size="12" text-anchor="middle" fill="#5d6b55" font-family="sans-serif">${sub}</text></svg>`),
+  debrief:()=>svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240"><rect width="320" height="240" fill="#e8e2d2"/><rect x="50" y="12" width="220" height="222" fill="#fff" stroke="#cfc8b4"/>
+    <text x="160" y="38" font-size="15" text-anchor="middle" fill="#2b5a27" font-family="sans-serif">ใบถอดบทเรียน รอบที่ 1</text>
+    <g font-size="12" fill="#94643a" font-family="sans-serif"><text x="66" y="66">1. เกิดอะไรขึ้นในเกม</text><text x="66" y="124">2. ทำไมจึงเกิดขึ้น</text><text x="66" y="182">3. ชีวิตจริงคืออะไร</text></g>
+    <g stroke="#ccc" stroke-width="2"><path d="M66 80h180M66 94h150M66 138h180M66 152h120M66 196h180M66 210h140"/></g></svg>`)
+};
+function imgSrc(v){if(!v)return'';if(v.startsWith('@')){const [k,...a]=v.slice(1).split(':');return ART[k]?ART[k](...a):''}return v}
+
+/* ============ ข้อมูลตัวอย่าง (นักศึกษาสมมติ) ============ */
+function blankPhase(){return {lv:{},why:{},goal:'',doubt:'',grow:'',quiz:{},done:false,date:''}}
+function seed(){
+  const s = [
+    {id:'s1',no:'671140105',name:'นางสาวพิมพ์ชนก รักถิ่น',nick:'พิมพ์',
+     self:{pre:{lv:{o1:2,o2:1,o3:2,o4:2},why:{o1:'จำสัดส่วนได้จากสื่อออนไลน์ แต่ไม่เคยเห็นแปลงจริง',o3:'ยังไม่แน่ใจว่า 3 ห่วงกับ 2 เงื่อนไขต่างกันอย่างไร'},goal:'อยากเข้าใจว่าทำไมโคกหนองนาช่วยให้ครอบครัวพึ่งตนเองได้ และเล่าให้ที่บ้านฟังได้',doubt:'ถ้าที่ดินเล็กมาก ยังใช้สัดส่วน 30 : 30 : 30 : 10 ได้ไหม',quiz:{0:0,1:1,2:0,3:0,4:0},done:true,date:'2026-11-09'},
+           post:{lv:{o1:3,o2:3,o3:3,o4:4},why:{o1:'อธิบายได้ว่านาติดหนองได้ข้าวเพิ่มเพราะมีน้ำ',o2:'รอบสองวางหนองแถวล่างตามความลาด',o3:'ปฏิเสธสินเชื่อรถไถในรอบสองเพราะยังไม่มีน้ำสำรอง',o4:'เอามื้อช่วยทีมอื่น 2 ครั้ง'},goal:'อยากเข้าใจว่าทำไมโคกหนองนาช่วยให้ครอบครัวพึ่งตนเองได้ และเล่าให้ที่บ้านฟังได้',doubt:'ถ้าเป็นที่ลุ่มน้ำท่วมทุกปี จะวางผังต่างจากในเกมอย่างไร',grow:'รอบแรกฉันรับการ์ดพ่อค้าชวนปลูกพืชเชิงเดี่ยว ปลูกข้าวเกือบเต็มแปลง และขุดหนองที่สูง พอฤดูที่ 3 แล้ง นาขาดน้ำ คะแนนพอกินต่ำ หลังได้ข้อเสนอแนะ รอบสองฉันวางหนองที่ต่ำตามสัดส่วน 6 : 6 : 6 : 2 และไม่รับเงินกู้ คะแนนรวมเพิ่มจาก 23 เป็น 34',quiz:{0:1,1:1,2:1,3:0,4:0},done:true,date:'2026-11-20'}},
+     port:[
+      {id:'e1',date:'2026-11-10',title:'ผังแปลงรอบที่ 1 (ฤดูที่ 1)',type:'board',img:'@board:1',objs:['o1','o2'],
+       what:'วางผังแปลง 20 ช่องตอนเริ่มเกม ปลูกข้าวเกือบทั้งแปลงเพราะอยากได้ผลผลิตเร็ว',
+       so:'ตอนวางยังไม่ได้ดูว่าน้ำไหลจากที่สูงลงที่ต่ำ จึงขุดหนองไว้มุมบนซ้าย',
+       now:'รอบหน้าจะดูความลาดของแปลงก่อนวางผัง',
+       fb:[{id:'f1',role:'teacher',by:'อาจารย์ผู้สอน',date:'2026-11-11',at:'ฤดูที่ 1',scores:{o1:2,o2:1},
+            back:'กล้าลองวางผังและบอกเหตุผลของตัวเองได้',
+            fwd:'หนองอยู่บนที่สูงจึงเก็บน้ำได้แค่ 2 หน่วย ลองย้ายหนองลงแถวล่างสุด และดูแถบสัดส่วนให้ใกล้ 6 : 6 : 6 : 2'}],
+       resp:{text:'รอบสองจะเริ่มจากวางหนองแถวล่าง แล้วค่อยวางนาติดหนองเพื่อรับน้ำ',date:'2026-11-12',done:true}},
+      {id:'e2',date:'2026-11-10',title:'ผลคะแนน 4 ด้าน รอบที่ 1',type:'score',img:'@score:1:5:6:7:5',objs:['o3'],
+       what:'จบ 8 ฤดูได้คะแนนรวม 23 คะแนน พอกินต่ำที่สุด',
+       so:'ฤดูที่ 3 แล้งหนัก นาขาดน้ำ และฉันรับสินเชื่อรถไถในฤดูที่ 5 ต้องจ่ายหนี้จนอาหารไม่พอ',
+       now:'จะคิดเรื่องความพอประมาณก่อนรับการ์ดล่อใจ',
+       fb:[{id:'f2',role:'teacher',by:'อาจารย์ผู้สอน',date:'2026-11-11',at:'ฤดูที่ 5',scores:{o3:2},
+            back:'วิเคราะห์ได้ถูกต้องว่าคะแนนพอกินต่ำเพราะแล้งและหนี้สิน',
+            fwd:'ฤดูที่ 5 รับสินเชื่อรถไถโดยยังไม่มีน้ำสำรอง ลองเขียนว่าถ้าใช้หลักความพอประมาณและภูมิคุ้มกัน จะตัดสินใจต่างไปอย่างไร'},
+           {id:'f3',role:'peer',by:'ธนกร',date:'2026-11-11',at:'ฤดูที่ 3',stars:['จดเหตุผลทุกครั้งที่ตัดสินใจ ทำให้ทีมย้อนดูได้','ยอมรับตรง ๆ ว่ารับเงินกู้เพราะอะไร'],wish:'อยากให้ลองแบ่งข้าวให้ครัวเรือนอื่นตอนแล้ง จะได้คะแนนพอร่มเย็นเพิ่ม'}],
+       resp:{text:'เขียนแผนรอบสองแล้ว: จะไม่รับเงินกู้ถ้ายังมีน้ำสำรองไม่ถึง 4 หน่วย และจะแบ่งข้าวเมื่อเพื่อนขาด',date:'2026-11-12',done:true}},
+      {id:'e3',date:'2026-11-17',title:'ผังแปลงและการตัดสินใจ รอบที่ 2',type:'board',img:'@board:2',objs:['o1','o2','o3','o4'],
+       what:'เล่นรอบสอง วางป่าแถวบน หนองแถวล่าง สัดส่วน 6 : 6 : 6 : 2 ปฏิเสธเงินกู้ และเอามื้อช่วยทีมอื่น 2 ครั้ง',
+       so:'ฤดูแล้งยังมีน้ำในหนอง นาติดหนองได้ข้าวเพิ่ม คะแนนรวม 34 คะแนน และพอร่มเย็นสูงสุดในทีม',
+       now:'จะลองออกแบบผังโคกหนองนาสำหรับที่ดินจริงของบ้านตัวเอง',
+       fb:[{id:'f4',role:'teacher',by:'อาจารย์ผู้สอน',date:'2026-11-18',at:'ฤดูที่ 6',scores:{o1:3,o2:3,o3:3,o4:4},
+            back:'ผังเป็นไปตามภูมิสังคม อธิบายได้ว่าทำไมนาต้องอยู่ติดหนอง และการเอามื้อช่วยทีมอื่นเป็นแบบอย่างให้เพื่อน',
+            fwd:'ฤดูที่ 6 ตัดสินใจถูก แต่ยังให้เหตุผลว่า "รู้สึกว่าเสี่ยง" ลองอธิบายด้วยหลัก 3 ห่วง 2 เงื่อนไขให้ชัด จะขึ้นถึงระดับออกดอกออกผล'}],
+       resp:null}
+     ]},
+    {id:'s2',no:'671140112',name:'นายธนกร มั่นเพียร',nick:'ธนกร',
+     self:{pre:{lv:{o1:2,o2:2,o3:2,o4:3},why:{},goal:'อยากชนะเกมโดยไม่ทิ้งเพื่อนในทีม',doubt:'ป่า 5 ระดับมีอะไรบ้าง',quiz:{0:1,1:1,2:2,3:1,4:1},done:true,date:'2026-11-09'},post:blankPhase()},
+     port:[
+      {id:'e4',date:'2026-11-18',title:'ใบถอดบทเรียน รอบที่ 1',type:'debrief',img:'@debrief',objs:['o3'],
+       what:'ตอบคำถาม 3 ชั้น เกิดอะไรขึ้น ทำไม และชีวิตจริงคืออะไร',so:'น้ำป่าในฤดูที่ 6 ทำให้นาเสียหาย เพราะไม่มีป่ากันดินพัง',now:'รอบสองจะปลูกป่าบนที่สูงก่อนปลูกนา',fb:[],resp:null}
+     ]},
+    {id:'s3',no:'671140118',name:'นางสาวณัฐธิดา ใฝ่รู้',nick:'ณัฐ',
+     self:{pre:{lv:{o1:2,o2:2,o3:1,o4:2},why:{},goal:'อยากเข้าใจหลักเศรษฐกิจพอเพียงให้ลึกกว่าการท่องจำ',doubt:'',quiz:{0:2,1:1,2:0,3:0,4:1},done:true,date:'2026-11-09'},
+           post:{lv:{o1:3,o2:3,o3:4,o4:3},why:{o3:'ปฏิเสธการ์ดล่อใจทุกใบในรอบสอง'},goal:'อยากเข้าใจหลักเศรษฐกิจพอเพียงให้ลึกกว่าการท่องจำ',doubt:'ยังสับสนว่าข้อไหนเป็น 3 ห่วง ข้อไหนเป็น 2 เงื่อนไข',grow:'ก่อนเล่นฉันท่องได้แต่ชื่อหลักการ หลังเล่นสองรอบฉันเห็นว่าการไม่รับเงินกู้ทำให้ทีมรอดหน้าแล้ง แต่ยังต้องทบทวนชื่อหลักให้ถูก',quiz:{0:1,1:1,2:1,3:2,4:0},done:true,date:'2026-11-20'}},
+     port:[
+      {id:'e5',date:'2026-11-10',title:'ผลคะแนน 4 ด้าน รอบที่ 1',type:'score',img:'@score:1:8:6:6:4',objs:['o3'],
+       what:'จบ 8 ฤดูได้ 24 คะแนน พอร่มเย็นต่ำ',so:'เก็บอาหารไว้ใช้เองทั้งหมด ไม่ได้แบ่งปันครัวเรือนอื่นเลย',now:'รอบสองจะวางแผนแบ่งปันก่อนฤดูแล้ง',
+       fb:[{id:'f6',role:'teacher',by:'อาจารย์ผู้สอน',date:'2026-11-11',at:'ฤดูที่ 4',scores:{o3:3},back:'ตัดสินใจไม่รับการ์ดล่อใจด้วยเหตุผลที่ชัดเจน',fwd:'ฤดูที่ 4 มีข้าวเหลือแต่ไม่ได้แบ่งปัน ลองคิดว่าคะแนนพอร่มเย็นสะท้อนหลักคุณธรรมอย่างไร'}],
+       resp:{text:'รอบสองจะแบ่งข้าวให้ครัวเรือนที่ขาดในฤดูแล้ง และบันทึกผลต่อคะแนนพอร่มเย็น',date:'2026-11-12',done:true}},
+      {id:'e6',date:'2026-11-21',title:'บทบาทนักบัญชีของทีม 3 และการเอามื้อ',type:'team',img:'@card:เอามื้อสามัคคี:ช่วยทีมอื่นลงแรง 1 ฤดู',objs:['o4'],
+       what:'เป็นนักบัญชีของทีม บันทึกทรัพยากรทุกฤดู และเสนอให้ทีมเอามื้อช่วยทีม 2',so:'การเอามื้อทำให้คะแนนพอร่มเย็นของทั้งสองทีมเพิ่มขึ้น',now:'จะสรุปตารางบัญชีให้ทีมอื่นใช้ด้วย',
+       fb:[{id:'f7',role:'peer',by:'พิมพ์',date:'2026-11-21',at:'ฤดูที่ 7',stars:['บันทึกบัญชีละเอียด ทีมรู้ว่าเหลือน้ำเท่าไร','เป็นคนเสนอให้เอามื้อช่วยทีม 2'],wish:'อยากให้ทำตารางเป็นกราฟ จะเห็นว่าน้ำลดลงฤดูไหนชัดขึ้น'}],resp:null}
+     ]},
+    {id:'s4',no:'671140124',name:'นายภูมิ พากเพียร',nick:'ภูมิ',self:{pre:blankPhase(),post:blankPhase()},port:[]}
+  ];
+  return {role:'student',cur:'s1',students:s,seq:100};
+}
+
+/* ============ สถานะ ============ */
+const KEY='kbg-afl-v1';
+let S;
+const ui={tab:'home',phase:null,fbMode:'mine',showAdd:false,filter:'all',peerOpen:null,tOpen:null,tFilter:'todo',draftImg:''};
+function load(){
+  try{const r=localStorage.getItem(KEY);if(r){S=JSON.parse(r);return}}catch(e){}
+  S=seed();
+}
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(S));return true}
+  catch(e){toast('พื้นที่จัดเก็บในเบราว์เซอร์เต็ม ลองใช้รูปขนาดเล็กลง');return false}
+}
+const stu=(id)=>S.students.find(x=>x.id===(id||S.cur));
+const esc=(t)=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const objById=(id)=>OBJ.find(o=>o.id===id);
+const MONTHS=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+function thDate(iso){if(!iso)return'';const[y,m,d]=iso.split('-').map(Number);return `${d} ${MONTHS[m-1]} ${String(y+543).slice(2)}`}
+function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2600)}
+function lvTag(n){if(!n)return '<span class="lvtag l0">ยังไม่ประเมิน</span>';const L=LEVELS[n];return `<span class="lvtag l${n}">${L.icon} ${n} ${L.name}</span>`}
+function domChip(o){const c=o.dom==='K'?'k':o.dom==='S'?'s':'a';const n=o.dom==='K'?'ความรู้':o.dom==='S'?'ทักษะ':'เจตคติ';return `<span class="chip ${c}">${o.dom} · ${n} · ${o.clo}</span>`}
+function quizScore(ph){let n=0,c=0;QUIZ.forEach((q,i)=>{if(ph.quiz[i]!==undefined){n++;if(ph.quiz[i]===q.a)c++}});return {n,c}}
+function latestLv(s,oid){return (s.self.post.done&&s.self.post.lv[oid])||(s.self.pre.done&&s.self.pre.lv[oid])||0}
+function teacherLv(s,oid){let v=0,d='';s.port.forEach(e=>e.fb.forEach(f=>{if(f.role==='teacher'&&f.scores&&f.scores[oid]&&f.date>=d){v=f.scores[oid];d=f.date}}));return v}
+function pendingResp(s){return s.port.filter(e=>e.fb.length&&!(e.resp&&e.resp.done))}
+function noTeacherFb(e){return !e.fb.some(f=>f.role==='teacher')}
+function calib(self,tch){if(!self||!tch)return null;const d=self-tch;if(d>=1)return{c:'warn',t:'ประเมินตนเองสูงกว่าอาจารย์'};if(d<=-1)return{c:'k',t:'ประเมินตนเองต่ำกว่าอาจารย์'};return{c:'ok',t:'ตรงกับอาจารย์'}}
+
+/* ============ ส่วนหัว ============ */
+function renderHeader(){
+  document.getElementById('r-student').classList.toggle('on',S.role==='student');
+  document.getElementById('r-teacher').classList.toggle('on',S.role==='teacher');
+  const sel=document.getElementById('who');
+  sel.innerHTML=S.students.map(s=>`<option value="${s.id}" ${s.id===S.cur?'selected':''}>${S.role==='student'?'ฉันคือ ':'ดูงาน: '}${esc(s.name)} (รหัส ${s.no})</option>`).join('');
+  const s=stu();
+  const pend=pendingResp(s).length;
+  const tTodo=S.students.reduce((a,x)=>a+x.port.filter(noTeacherFb).length,0);
+  const tabs = S.role==='student'
+   ? [['home','','หน้าหลัก'],['self','1','ประเมินตนเอง'],['port','2','แฟ้มสะสมงาน'],['fb','3','ข้อเสนอแนะ'+(pend?`<span class="badge">${pend}</span>`:'')],['report','','รายงานพัฒนาการ']]
+   : [['home','','ภาพรวมชั้นเรียน'],['self','1','ผลประเมินตนเอง'],['port','2','แฟ้มสะสมงาน'],['fb','3','ให้ข้อเสนอแนะ'+(tTodo?`<span class="badge">${tTodo}</span>`:'')],['report','','รายงานรายบุคคล']];
+  document.getElementById('tabs').innerHTML=tabs.map(([k,n,l])=>`<button data-act="tab" data-v="${k}" class="${ui.tab===k?'on':''}">${n?`<span class="num">${n}</span>`:''}${l}</button>`).join('');
+}
+
+/* ============ หน้าหลัก ============ */
+function viewHome(){
+  if(S.role==='teacher')return viewClass();
+  const s=stu(),pre=s.self.pre,post=s.self.post;
+  const hasFb=s.port.some(e=>e.fb.length);
+  const pend=pendingResp(s);
+  const steps=[
+    {ic:'🎯',t:'ตั้งเป้า & ประเมินก่อนเรียน',done:pre.done,go:'self',ph:'pre',st:pre.done?'ทำแล้ว '+thDate(pre.date):'ยังไม่ได้ทำ'},
+    {ic:'🗂️',t:'เก็บหลักฐานลงแฟ้ม',done:s.port.length>=OBJ.length-1,go:'port',st:`${s.port.length} ชิ้น`},
+    {ic:'💬',t:'รับ & ตอบข้อเสนอแนะ',done:hasFb&&!pend.length,go:'fb',st:hasFb?(pend.length?`รอตอบ ${pend.length} ชิ้น`:'ตอบครบแล้ว'):'ยังไม่มี'},
+    {ic:'📈',t:'ประเมินหลังเรียน & สะท้อนพัฒนาการ',done:post.done,go:'self',ph:'post',st:post.done?'ทำแล้ว '+thDate(post.date):'ยังไม่ได้ทำ'}
+  ];
+  const nowIdx=steps.findIndex(x=>!x.done);
+  const todos=[];
+  if(!pre.done)todos.push(['🎯','ทำแบบประเมินตนเองก่อนเรียนและตั้งเป้าหมาย','self','pre']);
+  pend.forEach(e=>todos.push(['💬',`ตอบข้อเสนอแนะของงาน "${esc(e.title)}" ว่าจะปรับปรุงอย่างไร`,'fb']));
+  OBJ.forEach(o=>{if(!s.port.some(e=>e.objs.includes(o.id)))todos.push(['🗂️',`ยังไม่มีหลักฐานของ "${o.short}" ลองเพิ่มลงแฟ้ม`,'port'])});
+  const lowObj=OBJ.filter(o=>{const l=latestLv(s,o.id);return l&&l<PASS});
+  lowObj.forEach(o=>todos.push(['🌱',`${o.short}: ${o.tip}`,'self']));
+  if(pre.done&&!post.done)todos.push(['📈','เมื่อเรียนจบหน่วย ทำแบบประเมินตนเองหลังเรียนเพื่อดูพัฒนาการ','self','post']);
+  const lvNow=OBJ.map(o=>latestLv(s,o.id)).filter(Boolean);
+  const avg=lvNow.length?(lvNow.reduce((a,b)=>a+b,0)/lvNow.length).toFixed(1):'–';
+  const fbCount=s.port.reduce((a,e)=>a+e.fb.length,0);
+  return `
+  <div class="hero">
+    <div>
+      <span class="unitpill">${UNIT.name}</span>
+      <h2>สวัสดี ${esc(s.nick)} 👋</h2>
+      <p class="muted">ประเมินตนเอง → เก็บหลักฐาน → รับข้อเสนอแนะ → ปรับปรุง แล้ววนกลับมาดูว่าเราเติบโตขึ้นแค่ไหน</p>
+      ${pre.goal?`<p><b>เป้าหมายของฉัน:</b> ${esc(pre.goal)}</p>`:''}
+    </div>
+    <svg width="150" height="110" viewBox="0 0 150 110" aria-hidden="true"><ellipse cx="40" cy="88" rx="34" ry="14" fill="#3b82c4"/><rect x="78" y="72" width="64" height="26" rx="5" fill="#e6c860"/><path d="M70 74c10-40 50-60 76-46v44z" fill="#4f8a3c"/><circle cx="110" cy="30" r="12" fill="#5c9a45"/><rect x="108" y="38" width="4" height="22" fill="#94643a"/><circle cx="28" cy="22" r="10" fill="#f2c14e"/></svg>
+  </div>
+  <div class="card">
+    <h3>วงจรการประเมินเพื่อพัฒนาการเรียนรู้ของฉัน</h3>
+    <div class="cycle">${steps.map((x,i)=>`<div class="step ${x.done?'done':i===nowIdx?'now':''}" data-act="go" data-v="${x.go}" ${x.ph?`data-ph="${x.ph}"`:''}><div class="ic">${x.done?'✅':x.ic}</div><b>${i+1}. ${x.t}</b><div class="st muted">${x.st}</div></div>`).join('')}</div>
+  </div>
+  <div class="grid g4" style="margin-bottom:16px">
+    <div class="stat"><div class="v">${avg}</div><div class="l">ระดับเฉลี่ยล่าสุด (เต็ม 4)</div></div>
+    <div class="stat"><div class="v">${OBJ.filter(o=>latestLv(s,o.id)>=PASS).length}/${OBJ.length}</div><div class="l">จุดประสงค์ที่ถึงระดับ "ต้นไม้" ขึ้นไป</div></div>
+    <div class="stat"><div class="v">${s.port.length}</div><div class="l">หลักฐานในแฟ้มสะสมงาน</div></div>
+    <div class="stat"><div class="v">${fbCount}</div><div class="l">ข้อเสนอแนะที่ได้รับ</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>สิ่งที่ควรทำต่อ</h3>
+      ${todos.length?`<ul class="todo">${todos.slice(0,6).map(t=>`<li><span class="dot">${t[0]}</span><div style="flex:1">${t[1]}</div><button class="btn sm" data-act="go" data-v="${t[2]}" ${t[3]?`data-ph="${t[3]}"`:''}>ไป</button></li>`).join('')}</ul>`:'<p class="muted">ทำครบทุกขั้นแล้ว เยี่ยมมาก 🎉 ลองเปิดรายงานพัฒนาการดูนะ</p>'}
+    </div>
+    <div class="card"><h3>จุดประสงค์ของหน่วยนี้</h3>
+      ${OBJ.map(o=>`<div style="padding:8px 0;border-bottom:1px dashed var(--line)"><div class="row between"><b>${o.short}</b>${lvTag(latestLv(s,o.id))}</div><div class="small muted">${o.text}</div></div>`).join('')}
+    </div>
+  </div>
+  ${aboutBox()}`;
+}
+
+function teachInsights(){
+  const pct=(ph,i,q)=>{const a=S.students.filter(s=>s.self[ph].done&&s.self[ph].quiz[i]!==undefined);return a.length?Math.round(a.filter(s=>s.self[ph].quiz[i]===q.a).length*100/a.length):null};
+  const items=QUIZ.map((q,i)=>({q,i,pre:pct('pre',i,q),post:pct('post',i,q)}));
+  const weak=items.filter(x=>(x.post??x.pre)!==null&&(x.post??x.pre)<60);
+  const eff=(s,id)=>teacherLv(s,id)||latestLv(s,id);
+  const groups=OBJ.map(o=>({o,list:S.students.filter(s=>{const l=eff(s,o.id);return l&&l<PASS}),none:S.students.filter(s=>!eff(s,o.id))}));
+  const doubts=S.students.map(s=>({s,d:(s.self.post.done&&s.self.post.doubt)||s.self.pre.doubt})).filter(x=>x.d);
+  return `<div class="card" style="border-color:var(--water-b)">
+    <h3>นำผลการประเมินไปปรับการเรียนการสอน</h3>
+    <p class="small muted">ระบบสรุปจากแบบประเมินตนเอง แบบทดสอบ และระดับที่อาจารย์ให้ เพื่อให้อาจารย์วางแผนคาบถัดไปได้ทันที</p>
+    <div class="grid g2">
+      <div><h4>วิเคราะห์รายข้อ (ร้อยละตอบถูก)</h4>
+        <div class="legend" style="margin-bottom:6px"><span><i style="background:var(--pre)"></i>ก่อนเรียน</span><span><i style="background:var(--green)"></i>หลังเรียน</span></div>
+        ${items.map(x=>`<div class="ia"><span>${x.i+1}. ${QSHORT[x.i]}</span><div class="tracks"><div class="track"><div class="fill pre" style="width:${x.pre??0}%"></div></div><div class="track"><div class="fill post" style="width:${x.post??0}%"></div></div></div><span class="tiny" style="font-variant-numeric:tabular-nums">${x.pre??'–'}% → ${x.post??'–'}%</span></div>`).join('')}
+        ${weak.length?`<p class="small" style="margin-top:8px">⚠️ <b>ควรสอนซ้ำ:</b> ${weak.map(x=>QSHORT[x.i]).join(', ')} (ตอบถูกต่ำกว่าร้อยละ 60) เช่น ยกเหตุการณ์จากเกมของทีมต่าง ๆ มาอภิปราย แล้วเล่นสถานการณ์นั้นซ้ำต้นคาบถัดไป</p>`:'<p class="small" style="margin-top:8px">✅ ทุกข้อตอบถูกตั้งแต่ร้อยละ 60 ขึ้นไป</p>'}
+      </div>
+      <div><h4>จัดกลุ่มสอนเสริม (เล่นสถานการณ์ซ้ำ)</h4>
+        ${groups.map(g=>`<div style="padding:6px 0;border-bottom:1px dashed var(--line)"><div class="row between"><b class="small">${g.o.short}</b><span class="tiny muted">${g.list.length} คน</span></div>
+          ${g.list.length?`<div class="row" style="gap:4px;margin:4px 0">${g.list.map(s=>`<span class="chip warn">${esc(s.nick)}</span>`).join('')}</div><div class="tiny muted">กิจกรรม: ${g.o.tip}</div>`:'<div class="tiny muted">ไม่มีนักศึกษาที่ต่ำกว่าเกณฑ์</div>'}
+          ${g.none.length?`<div class="tiny muted">ยังไม่มีข้อมูล: ${g.none.map(s=>esc(s.nick)).join(', ')}</div>`:''}</div>`).join('')}
+      </div>
+    </div>
+    <hr><h4>คำถามที่นักศึกษายังสงสัย (ใช้เปิดคาบถัดไป)</h4>
+    ${doubts.length?`<ul class="todo">${doubts.map(x=>`<li><span class="dot">❓</span><div><b>${esc(x.s.nick)}:</b> ${esc(x.d)}</div></li>`).join('')}</ul>`:'<p class="muted small">ยังไม่มี</p>'}
+  </div>`;
+}
+
+function aboutBox(){return `
+  <details class="about">
+    <summary>ต้นแบบนี้ตอบเกณฑ์การประเมินอย่างไร (5 ข้อ)</summary>
+    <ol>
+      <li><b>Self-Assessment การประเมินตนเอง</b> รูบริก 4 ระดับแบบ "ฉันทำได้..." ครอบคลุมหลักการโคกหนองนา การวางผังตามภูมิสังคม การตัดสินใจตามหลักความพอเพียง และการเอามื้อแบ่งปัน เกณฑ์ผ่านระดับ 3 ประเมินก่อนเล่นเกมและหลังเล่นรอบที่ 2 ต้องระบุหลักฐาน ตั้งเป้า บอกสิ่งที่สงสัย และเขียนสะท้อนพัฒนาการ แบบทดสอบ 5 ข้อเฉลยทันทีช่วยเทียบความรู้สึกกับผลจริง</li>
+      <li><b>Portfolio การจัดเก็บหลักฐาน</b> เก็บภาพผังแปลง ผลคะแนน 4 ด้าน การตัดสินใจต่อการ์ด ใบถอดบทเรียน และบทบาทในทีม ผูกกับจุดประสงค์ เรียงตามเส้นเวลา ทุกชิ้นมีสะท้อนคิด What? So what? Now what? และมีเส้นทางพัฒนาการจากเกมรอบที่ 1 ถึงรอบที่ 2</li>
+      <li><b>Feedback การให้ข้อมูลป้อนกลับ</b> อาจารย์ใช้กรอบ Feed Up – Feed Back – Feed Forward (Hattie &amp; Timperley, 2007) ให้ระดับตามรูบริกเดียวกัน และอ้างฤดูในเกมที่เกิดเหตุการณ์ เพื่อนให้ 2 ดาว 1 ความหวัง ระบบเฉลยทันที เป้าคือให้ข้อเสนอแนะภายใน 2 วันและก่อนเล่นรอบถัดไป นักศึกษาต้องตอบว่าจะปรับการเล่นอย่างไรจึงปิดวงจร</li>
+      <li><b>เทคโนโลยีดิจิทัลและความคิดสร้างสรรค์</b> ใช้คู่กับบอร์ดเกมออนไลน์ "โคก หนอง นา พอเพียง" ที่ผู้จัดทำพัฒนาขึ้น ผลการเล่นกลายเป็นหลักฐานการเรียนรู้ เว็บแอปใช้ได้ทั้งมือถือและคอมพิวเตอร์ และสรุปผลทั้งชั้นอัตโนมัติ</li>
+      <li><b>การนำไปใช้และประโยชน์</b> ใช้ตามวงจรเล่นเกม → ถอดบทเรียน → รับข้อเสนอแนะ → เล่นซ้ำ ซึ่งสอดคล้องกับการเรียนรู้จากประสบการณ์ของ Kolb นักศึกษาเห็นพัฒนาการของตนเองจากรอบแรกถึงรอบสอง อาจารย์เห็นการวิเคราะห์รายข้อ กลุ่มสอนเสริม และคำถามที่นักศึกษาสงสัย เพื่อปรับการสอน</li>
+    </ol>
+    <p class="small muted">สลับบทบาท "นักศึกษา / อาจารย์" ที่มุมขวาบนเพื่อดูทั้งสองมุม ข้อมูลตัวอย่างเป็นนักศึกษาสมมติ 4 คน</p>
+  </details>`}
+
+function viewClass(){
+  const rows=S.students.map(s=>{
+    const cells=OBJ.map(o=>{
+      const sl=latestLv(s,o.id),tl=teacherLv(s,o.id),c=calib(sl,tl);
+      return `<td><span class="pair"><span class="mini ${sl?'self':'na'}" title="นักศึกษาประเมิน">${sl||'–'}</span><span class="mini ${tl?'tch':'na'}" title="อาจารย์ประเมิน">${tl||'–'}</span></span>${c&&c.c!=='ok'?`<div class="tiny" style="color:${c.c==='warn'?'var(--gold-ink)':'var(--water)'}">${c.c==='warn'?'▲ สูงกว่า':'▼ ต่ำกว่า'}</div>`:''}</td>`}).join('');
+    const pq=quizScore(s.self.pre),qq=quizScore(s.self.post);
+    return `<tr><td><b>${esc(s.name)}</b><div class="tiny muted">รหัส ${s.no}</div></td>
+      <td>${s.self.pre.done?'✅':'<span class="chip bad">ยังไม่ทำ</span>'}</td><td>${s.self.post.done?'✅':'<span class="chip warn">ยังไม่ทำ</span>'}</td>
+      ${cells}
+      <td>${pq.n?pq.c:'–'} → ${qq.n?qq.c:'–'}</td>
+      <td>${s.port.length}</td>
+      <td>${s.port.filter(noTeacherFb).length?`<span class="chip warn">${s.port.filter(noTeacherFb).length}</span>`:'0'}</td>
+      <td><button class="btn sm" data-act="viewstu" data-v="${s.id}">ดู</button></td></tr>`}).join('');
+  const watch=[];
+  S.students.forEach(s=>{
+    if(!s.self.pre.done)watch.push(`<b>${esc(s.nick)}</b> ยังไม่ประเมินตนเองก่อนเรียน`);
+    if(!s.port.length)watch.push(`<b>${esc(s.nick)}</b> ยังไม่มีหลักฐานในแฟ้ม`);
+    OBJ.forEach(o=>{const c=calib(latestLv(s,o.id),teacherLv(s,o.id));if(c&&c.c==='warn')watch.push(`<b>${esc(s.nick)}</b> ประเมิน "${o.short}" สูงกว่าอาจารย์ ควรคุยเรื่องหลักฐาน`)});
+    pendingResp(s).forEach(e=>watch.push(`<b>${esc(s.nick)}</b> ยังไม่ตอบข้อเสนอแนะของ "${esc(e.title)}"`));
+  });
+  const tf=[];S.students.forEach(s=>s.port.forEach(e=>e.fb.forEach(f=>{if(f.role==='teacher')tf.push(days(e.date,f.date))})));
+  const allE=S.students.flatMap(s=>s.port),withFb=allE.filter(e=>e.fb.length),revised=allE.filter(e=>e.resp&&e.resp.done);
+  const avgT=tf.length?(tf.reduce((a,b)=>a+b,0)/tf.length).toFixed(1):'–';
+  const done=S.students.filter(s=>s.self.post.done);
+  const passRate=OBJ.map(o=>{const n=done.filter(s=>s.self.post.lv[o.id]>=PASS).length;return {o,p:done.length?Math.round(n*100/done.length):0}});
+  return `
+  <div class="hero"><div><span class="unitpill">${UNIT.name}</span><h2>ภาพรวมชั้นเรียน</h2><p class="muted">${UNIT.course} · นักศึกษา ${S.students.length} คน · คลิก "ดู" เพื่อเปิดงานของนักศึกษารายคน</p></div></div>
+  <div class="grid g4" style="margin-bottom:16px">
+    <div class="stat"><div class="v">${avgT} <span class="small muted">วัน</span></div><div class="l">เวลาเฉลี่ยที่อาจารย์ให้ feedback หลังส่งงาน (เป้า ≤ 2 วัน)</div></div>
+    <div class="stat"><div class="v">${withFb.length}/${allE.length}</div><div class="l">หลักฐานที่ได้รับ feedback แล้ว</div></div>
+    <div class="stat"><div class="v">${revised.length}/${withFb.length}</div><div class="l">งานที่นักศึกษาปรับปรุงตาม feedback แล้ว</div></div>
+    <div class="stat"><div class="v">${S.students.filter(s=>s.self.pre.done).length}/${S.students.length}</div><div class="l">นักศึกษาที่ประเมินตนเองก่อนเรียนแล้ว</div></div>
+  </div>
+  <div class="card"><div class="row between"><h3 style="margin:0">ระดับรายจุดประสงค์: นักศึกษาประเมิน เทียบกับ อาจารย์ประเมิน</h3>
+    <div class="legend"><span><i style="background:var(--green)"></i>นักศึกษา</span><span><i style="background:var(--water)"></i>อาจารย์</span></div></div>
+    <p class="small muted">ระดับ 1 เมล็ด · 2 ต้นกล้า · 3 ต้นไม้ (ผ่านเกณฑ์) · 4 ออกดอกออกผล</p>
+    <div class="tw"><table><thead><tr><th>นักศึกษา</th><th>ก่อนเรียน</th><th>หลังเรียน</th>${OBJ.map(o=>`<th>${o.short}<div class="tiny muted">${o.dom} · ${o.clo}</div></th>`).join('')}<th>แบบทดสอบ<br><span class="tiny">ก่อน → หลัง (5)</span></th><th>หลักฐาน</th><th>รออาจารย์<br>ให้ feedback</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>นักศึกษาที่ควรติดตาม</h3>${watch.length?`<ul class="todo">${watch.map(w=>`<li><span class="dot">👀</span><div>${w}</div></li>`).join('')}</ul>`:'<p class="muted">ไม่มี</p>'}</div>
+    <div class="card"><h3>ร้อยละที่ประเมินตนเองถึงเกณฑ์ (หลังเรียน)</h3><p class="small muted">จากนักศึกษาที่ประเมินหลังเรียนแล้ว ${done.length} คน</p>
+      <div class="bars">${passRate.map(x=>`<div class="barrow"><div class="lab"><span>${x.o.short}</span><b>${x.p}%</b></div><div class="track"><div class="fill post" style="width:${x.p}%"></div></div></div>`).join('')}</div>
+    </div>
+  </div>
+  ${teachInsights()}
+  ${aboutBox()}`;
+}
+
+/* ============ 1. ประเมินตนเอง ============ */
+function viewSelf(){
+  const s=stu();
+  if(!ui.phase)ui.phase=s.self.pre.done&&!s.self.post.done?'post':s.self.pre.done?'post':'pre';
+  const ph=s.self[ui.phase],ro=S.role==='teacher'||ph.done;
+  const head=`<div class="row between" style="margin-bottom:12px">
+    <div><h2 style="margin:0">${S.role==='teacher'?'ผลประเมินตนเองของ '+esc(s.nick):'1. ประเมินตนเอง (e-Self Assessment)'}</h2>
+    <div class="small muted">${UNIT.name}</div></div>
+    <div class="phase"><button data-act="phase" data-v="pre" class="${ui.phase==='pre'?'on':''}">ก่อนเรียน ${s.self.pre.done?'✓':''}</button><button data-act="phase" data-v="post" class="${ui.phase==='post'?'on':''}">หลังเรียน ${s.self.post.done?'✓':''}</button></div></div>`;
+  if(ui.phase==='post'&&!s.self.pre.done&&S.role==='student')
+    return head+`<div class="card empty-state"><div class="big">🎯</div><p>ทำแบบประเมินก่อนเรียนก่อน เพื่อให้มีจุดตั้งต้นไว้เทียบพัฒนาการ</p><button class="btn pri" data-act="phase" data-v="pre">ไปประเมินก่อนเรียน</button></div>`;
+  if(S.role==='teacher'&&!ph.done)
+    return head+`<div class="card empty-state"><div class="big">⏳</div><p>${esc(s.nick)} ยังไม่ได้ทำแบบประเมิน${ui.phase==='pre'?'ก่อน':'หลัง'}เรียน</p></div>`;
+  const qs=quizScore(ph);
+  let out=head;
+  if(ph.done)out+=resultPanel(s);
+  if(!ph.done) out+=`<div class="card flat" style="background:var(--water-l);border-color:var(--water-b)"><b>วิธีทำ</b> อ่านคำอธิบายแต่ละระดับ แล้วเลือกระดับที่ตรงกับตัวเองที่สุด ไม่มีถูกหรือผิด ยิ่งตอบตรงตามจริง ระบบยิ่งแนะนำได้ตรงจุด <span class="save-note">· บันทึกอัตโนมัติ</span></div>`;
+  out+=`<div class="card"><h3>ตอนที่ 1 ฉันอยู่ระดับไหน</h3>`;
+  OBJ.forEach((o,i)=>{
+    const sel=ph.lv[o.id]||0;
+    const preLv=ui.phase==='post'&&s.self.pre.done?s.self.pre.lv[o.id]:0;
+    out+=`<div class="obj"><h4><span>${i+1}.</span><span>${o.text}</span></h4><div class="row" style="gap:8px">${domChip(o)}${preLv?`<span class="tiny muted">ก่อนเรียนฉันเลือก</span>${lvTag(preLv)}`:''}</div>
+    <div class="lvls">${[1,2,3,4].map(n=>`<button class="lv ${sel===n?'on':''}" ${ro?'disabled':''} data-act="lv" data-o="${o.id}" data-v="${n}"><span class="t">${LEVELS[n].icon} ${n} ${LEVELS[n].name}</span><span>${o.lv[n]}</span></button>`).join('')}</div>
+    ${ro?(ph.why[o.id]?`<div class="small"><b>หลักฐาน/เหตุผล:</b> ${esc(ph.why[o.id])}</div>`:'')
+      :`<input type="text" data-bind="why:${o.id}" value="${esc(ph.why[o.id]||'')}" placeholder="หลักฐานหรือเหตุผลที่เลือกระดับนี้ เช่น รอบสองวางหนองที่ต่ำ และคะแนนพอกินเพิ่มขึ้น">`}
+    </div>`;
+  });
+  out+=`</div>`;
+  out+=`<div class="card"><div class="row between"><h3 style="margin:0">ตอนที่ 2 เช็กความเข้าใจ 5 ข้อ</h3>${qs.n?`<span class="chip ${qs.c>=4?'ok':qs.c>=3?'warn':'bad'}">ถูก ${qs.c}/${qs.n}</span>`:''}</div>
+    <p class="small muted">ตอบแล้วเห็นเฉลยทันที ใช้เทียบกับระดับที่ประเมินไว้ในตอนที่ 1</p>
+    ${QUIZ.map((q,i)=>{const ans=ph.quiz[i];const answered=ans!==undefined;
+      return `<div class="q"><b>${i+1}. ${q.q}</b> <span class="tiny muted">(${objById(q.obj).short})</span>
+      <div class="opts">${q.o.map((t,j)=>`<button class="opt ${answered&&j===q.a?'right':''} ${answered&&ans===j&&j!==q.a?'wrong':''}" ${answered||ro?'disabled':''} data-act="quiz" data-q="${i}" data-v="${j}">${'กขคง'[j]}. ${t}</button>`).join('')}</div>
+      ${answered?`<div class="explain">${ans===q.a?'✅ ถูกต้อง':'💡 ยังไม่ถูก'} — ${q.ex}</div>`:''}</div>`}).join('')}
+  </div>`;
+  out+=`<div class="card"><h3>ตอนที่ 3 ${ui.phase==='post'?'สะท้อนคิดหลังเรียน':'ตั้งเป้าและสิ่งที่ยังสงสัย'}</h3>
+    <label class="f">เป้าหมายของฉันในหน่วยนี้</label>
+    ${ro?`<p>${esc(ph.goal)||'<span class="muted">–</span>'}</p>`:`<textarea data-bind="goal" placeholder="เช่น อยากเข้าใจว่าโคกหนองนาช่วยให้ครอบครัวพึ่งตนเองได้อย่างไร">${esc(ph.goal)}</textarea>`}
+    <label class="f">สิ่งที่ฉันยังสงสัย / อยากให้อาจารย์ช่วย</label>
+    ${ro?`<p>${esc(ph.doubt)||'<span class="muted">–</span>'}</p>`:`<textarea data-bind="doubt" placeholder="เช่น ถ้าที่ดินเล็กมาก ยังใช้สัดส่วน 30 : 30 : 30 : 10 ได้ไหม">${esc(ph.doubt)}</textarea>`}
+    ${ui.phase==='post'?`<label class="f">🌱 สะท้อนพัฒนาการ: เทียบกับก่อนเรียน ฉันพัฒนาขึ้นอย่างไร และอะไรช่วยให้ฉันพัฒนา *</label>
+    ${ro?`<p>${esc(ph.grow)||'<span class="muted">–</span>'}</p>`:`<textarea data-bind="grow" placeholder="เช่น รอบแรกฉันขุดหนองที่สูงจนนาขาดน้ำ รอบสองย้ายหนองลงที่ต่ำ คะแนนพอกินจึงเพิ่มขึ้น">${esc(ph.grow)}</textarea>`}`:''}
+    ${ro?'':`<hr><div class="row between"><span class="small muted">เลือกระดับแล้ว ${Object.keys(ph.lv).length}/${OBJ.length} · ตอบแบบทดสอบ ${qs.n}/${QUIZ.length}</span><button class="btn pri" data-act="submitSelf">ส่งแบบประเมิน${ui.phase==='pre'?'ก่อน':'หลัง'}เรียน</button></div>`}
+    ${ph.done&&S.role==='student'?`<hr><div class="row between"><span class="small muted">ส่งเมื่อ ${thDate(ph.date)}</span><button class="btn sm" data-act="redoSelf">แก้ไขคำตอบ</button></div>`:''}
+  </div>`;
+  return out;
+}
+
+function resultPanel(s){
+  const pre=s.self.pre,post=s.self.post;
+  const pq=quizScore(pre),qq=quizScore(post);
+  const recs=[];
+  OBJ.forEach(o=>{const l=latestLv(s,o.id);if(l&&l<PASS)recs.push(`<li><span class="dot">🌱</span><div><b>${o.short}</b> (${LEVELS[l].name}) — ${o.tip}</div></li>`)});
+  // เทียบความรู้สึกกับผลทดสอบรายจุดประสงค์
+  const cal=[];
+  const ph=ui.phase==='post'&&post.done?post:pre;
+  ['o1','o2','o3'].forEach(id=>{
+    const items=QUIZ.map((q,i)=>({q,i})).filter(x=>x.q.obj===id&&ph.quiz[x.i]!==undefined);
+    if(!items.length)return;
+    const right=items.filter(x=>ph.quiz[x.i]===x.q.a).length,pct=right/items.length,lv=ph.lv[id]||0;
+    if(lv>=3&&pct<.5)cal.push(`<li><span class="dot">🤔</span><div><b>${objById(id).short}</b>: ประเมินตนเองว่า "${LEVELS[lv].name}" แต่ตอบแบบทดสอบส่วนนี้ถูก ${right}/${items.length} ลองทบทวนข้อที่ผิดแล้วเพิ่มหลักฐานยืนยัน</div></li>`);
+    else if(lv&&lv<=2&&pct===1)cal.push(`<li><span class="dot">💪</span><div><b>${objById(id).short}</b>: ตอบแบบทดสอบส่วนนี้ถูกทั้งหมด เธออาจเก่งกว่าที่คิด ลองท้าทายตัวเองระดับถัดไป</div></li>`);
+  });
+  return `<div class="card" style="border-color:var(--green-b)">
+    <div class="row between"><h3 style="margin:0">ผลการประเมินตนเองและพัฒนาการ</h3><div class="legend"><span><i style="background:var(--pre)"></i>ก่อนเรียน</span><span><i style="background:var(--green)"></i>หลังเรียน</span><span><i style="background:var(--water)"></i>อาจารย์ประเมิน</span></div></div>
+    <div class="grid g2" style="margin-top:10px">
+      <div class="bars">${OBJ.map(o=>{const a=pre.lv[o.id]||0,b=post.done?post.lv[o.id]||0:0,t=teacherLv(s,o.id);
+        return `<div class="barrow"><div class="lab"><span>${o.short}</span><span>${a?LEVELS[a].icon:''}${b?' → '+LEVELS[b].icon:''}${b&&a?` <b style="color:var(--green-d)">${b-a>0?'+'+(b-a):b-a===0?'±0':b-a}</b>`:''}</span></div>
+        <div class="track"><div class="fill pre" style="width:${a*25}%"></div></div>
+        ${post.done?`<div class="track"><div class="fill post" style="width:${b*25}%"></div></div>`:''}
+        ${t?`<div class="track"><div class="fill tch" style="width:${t*25}%"></div></div>`:''}</div>`}).join('')}
+      </div>
+      <div>
+        <div class="grid g3" style="grid-template-columns:1fr 1fr">
+          <div class="stat"><div class="v">${pq.n?pq.c:'–'}<span class="small muted">/5</span></div><div class="l">แบบทดสอบก่อนเรียน</div></div>
+          <div class="stat"><div class="v">${qq.n?qq.c:'–'}<span class="small muted">/5</span></div><div class="l">แบบทดสอบหลังเรียน</div></div>
+        </div>
+        ${pre.goal?`<p class="small" style="margin-top:10px"><b>🎯 เป้าหมาย:</b> ${esc(pre.goal)}</p>`:''}
+        ${post.done&&post.grow?`<p class="small"><b>🌱 พัฒนาการของฉัน:</b> ${esc(post.grow)}</p>`:''}
+        ${(post.doubt||pre.doubt)?`<p class="small"><b>❓ ยังสงสัย:</b> ${esc(post.done?post.doubt:pre.doubt)}</p>`:''}
+      </div>
+    </div>
+    ${recs.length||cal.length?`<hr><h4>คำแนะนำสำหรับก้าวต่อไป</h4><ul class="todo">${cal.join('')}${recs.join('')}</ul>`:`<hr><p>🎉 ทุกจุดประสงค์ถึงระดับ "ต้นไม้" ขึ้นไปแล้ว ลองเพิ่มหลักฐานในแฟ้มเพื่อขยับไปถึง "ออกดอกออกผล"</p>`}
+  </div>`;
+}
+
+/* ============ 2. แฟ้มสะสมงาน ============ */
+function viewPort(){
+  const s=stu(),isT=S.role==='teacher';
+  const list=s.port.filter(e=>ui.filter==='all'||e.objs.includes(ui.filter)).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  let out=`<div class="row between" style="margin-bottom:12px"><div><h2 style="margin:0">${isT?'แฟ้มสะสมงานของ '+esc(s.nick):'2. แฟ้มสะสมงาน (e-Portfolio)'}</h2><div class="small muted">เก็บหลักฐานการเรียนรู้และสะท้อนพัฒนาการของตนเอง</div></div>
+    ${isT?'':`<button class="btn pri" data-act="toggleAdd">${ui.showAdd?'ปิดฟอร์ม':'＋ เพิ่มหลักฐาน'}</button>`}</div>`;
+  out+=`<div class="card"><h3>เส้นทางพัฒนาการรายจุดประสงค์</h3><p class="small muted">ประเมินตนเองก่อนเรียน → ระดับที่อาจารย์ให้จากหลักฐานแต่ละชิ้น (เรียงตามวันที่) → ประเมินตนเองหลังเรียน</p>${growthPath(s)}</div>`;
+  out+=`<div class="cover" style="margin-bottom:14px">${OBJ.map(o=>{const n=s.port.filter(e=>e.objs.includes(o.id)).length;return `<div class="cov ${n?'':'empty'}"><div class="row between"><span class="small"><b>${o.short}</b></span><span class="n">${n}</span></div><div class="tiny muted">${n?'ชิ้นหลักฐาน':'ยังไม่มีหลักฐาน'}</div></div>`}).join('')}</div>`;
+  if(ui.showAdd&&!isT)out+=addForm();
+  out+=`<div class="subtabs"><button data-act="filter" data-v="all" class="${ui.filter==='all'?'on':''}">ทั้งหมด (${s.port.length})</button>${OBJ.map(o=>`<button data-act="filter" data-v="${o.id}" class="${ui.filter===o.id?'on':''}">${o.short}</button>`).join('')}</div>`;
+  if(!list.length)return out+`<div class="card empty-state"><div class="big">🗂️</div><p>${isT?'ยังไม่มีหลักฐาน':'ยังไม่มีหลักฐาน เริ่มจากแคปภาพผังแปลงรอบที่ 1 หรือผลคะแนน 4 ด้านหลังจบเกม'}</p></div>`;
+  out+=`<div class="timeline">${list.map(e=>entryCard(e,s,true)).join('')}</div>`;
+  return out;
+}
+function entryCard(e,s,withFbBtn){
+  const src=imgSrc(e.img);
+  const tFb=e.fb.filter(f=>f.role==='teacher').length,pFb=e.fb.filter(f=>f.role==='peer').length;
+  const status=!e.fb.length?'<span class="chip">รอข้อเสนอแนะ</span>':e.resp&&e.resp.done?'<span class="chip ok">✓ ปรับปรุงแล้ว</span>':'<span class="chip warn">มีข้อเสนอแนะ รอตอบ</span>';
+  return `<div class="entry"><div class="top">
+    ${src?`<img class="thumb" src="${src}" alt="">`:`<div class="thumb none">${TYPES[e.type].split(' ')[0]}</div>`}
+    <div><div class="row between"><span class="tiny muted">${thDate(e.date)} · ${TYPES[e.type]}</span>${status}</div>
+      <h4 style="margin:4px 0">${esc(e.title)}</h4>
+      <div class="row" style="gap:6px">${e.objs.map(id=>`<span class="chip ${objById(id).dom==='K'?'k':objById(id).dom==='S'?'s':'a'}">${objById(id).short}</span>`).join('')}</div>
+      ${e.link?`<div class="small" style="margin-top:4px">🔗 <a href="${esc(e.link)}" target="_blank" rel="noopener">${esc(e.link)}</a></div>`:''}
+      <div class="refl">
+        ${e.what?`<div><b>ฉันทำอะไร (What?)</b>${esc(e.what)}</div>`:''}
+        ${e.so?`<div><b>ฉันได้เรียนรู้อะไร (So what?)</b>${esc(e.so)}</div>`:''}
+        ${e.now?`<div><b>ครั้งหน้าฉันจะ (Now what?)</b>${esc(e.now)}</div>`:''}
+      </div>
+      ${withFbBtn?`<div class="row" style="margin-top:8px"><span class="small muted">💬 อาจารย์ ${tFb} · เพื่อน ${pFb}</span>${e.fb.length||S.role==='teacher'?`<button class="btn sm" data-act="openFb" data-v="${e.id}">${S.role==='teacher'?'ให้ข้อเสนอแนะ':'ดูข้อเสนอแนะ'}</button>`:''}${S.role==='student'&&s.id===S.cur?`<button class="btn sm ghost" data-act="delEntry" data-v="${e.id}">ลบ</button>`:''}</div>`:''}
+    </div></div></div>`;
+}
+function addForm(){
+  return `<form class="card addbox" data-form="add">
+    <h3>เพิ่มหลักฐานการเรียนรู้</h3>
+    <div class="grid g2">
+      <div>
+        <label class="f">ชื่อผลงาน *</label><input type="text" name="title" required placeholder="เช่น ผังแปลงรอบที่ 1">
+        <label class="f">ประเภท</label><select class="f" name="type">${Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select>
+        <label class="f">ลิงก์ (ถ้ามี)</label><input type="url" name="link" placeholder="https://padlet.com/...">
+        <label class="f">เป็นหลักฐานของจุดประสงค์ใด *</label>
+        <div class="checks">${OBJ.map(o=>`<label><input type="checkbox" name="objs" value="${o.id}"><span>${o.short}</span></label>`).join('')}</div>
+      </div>
+      <div>
+        <label class="f">ภาพหลักฐาน</label>
+        <label class="drop" for="imgIn">${ui.draftImg?`<img src="${ui.draftImg}" alt="">แตะเพื่อเปลี่ยนภาพ`:'📷 แตะเพื่อเลือกภาพหน้าจอเกม หรือภาพผลงาน<div class="hint">ระบบย่อขนาดภาพให้อัตโนมัติ</div>'}</label>
+        <input type="file" id="imgIn" accept="image/*" hidden>
+      </div>
+    </div>
+    <hr><h4>สะท้อนคิด</h4>
+    <div class="grid g3">
+      <div><label class="f">ฉันทำอะไร (What?)</label><textarea name="what" placeholder="อธิบายสิ่งที่ทำสั้น ๆ"></textarea></div>
+      <div><label class="f">ฉันได้เรียนรู้อะไร (So what?)</label><textarea name="so" placeholder="สิ่งที่ค้นพบ และทำไมสำคัญ"></textarea></div>
+      <div><label class="f">ครั้งหน้าฉันจะ (Now what?)</label><textarea name="now" placeholder="จะทำต่อหรือปรับปรุงอย่างไร"></textarea></div>
+    </div>
+    <div class="row" style="justify-content:flex-end;margin-top:12px"><button type="button" class="btn" data-act="toggleAdd">ยกเลิก</button><button class="btn pri" type="submit">บันทึกลงแฟ้ม</button></div>
+  </form>`;
+}
+
+function growthPath(s){
+  const pre=s.self.pre,post=s.self.post;
+  return `<div class="paths">${OBJ.map(o=>{
+    const n=[];
+    if(pre.done&&pre.lv[o.id])n.push({k:'self',l:pre.lv[o.id],t:'ก่อนเรียน',d:pre.date,o:0});
+    s.port.filter(e=>e.objs.includes(o.id)).forEach(e=>e.fb.forEach(f=>{if(f.role==='teacher'&&f.scores&&f.scores[o.id])n.push({k:'tch',l:f.scores[o.id],t:'อาจารย์ · '+e.title,d:f.date,o:1})}));
+    if(post.done&&post.lv[o.id])n.push({k:'self',l:post.lv[o.id],t:'หลังเรียน',d:post.date,o:2});
+    n.sort((a,b)=>a.o===0?-1:b.o===0?1:a.o===2?1:b.o===2?-1:a.d.localeCompare(b.d));
+    const diff=n.length>1?n[n.length-1].l-n[0].l:null;
+    return `<div class="prow"><div><b class="small">${o.short}</b>${diff!==null?` <span class="chip ${diff>0?'ok':diff<0?'bad':''}">${diff>0?'+':''}${diff} ระดับ</span>`:''}</div>
+      <div class="path">${n.length?n.map(x=>`<span class="node ${x.k}" title="${esc(x.t)}">${lvTag(x.l)}<span class="tiny muted">${esc(x.t.length>22?x.t.slice(0,22)+'…':x.t)} · ${thDate(x.d)}</span></span>`).join('<span class="arr">→</span>'):'<span class="small muted">ยังไม่มีข้อมูล ลองประเมินตนเองหรือเพิ่มหลักฐาน</span>'}</div></div>`}).join('')}</div>`;
+}
+
+/* ============ 3. ข้อเสนอแนะ ============ */
+function fbBlock(f,e){
+  if(f.role==='teacher')return `<div class="fb t"><div class="who"><span>👩‍🏫 ${esc(f.by)}</span><span class="tiny muted">${thDate(f.date)}${e?` · ตอบภายใน ${days(e.date,f.date)} วันหลังส่งงาน`:''}</span></div>
+    ${f.scores&&Object.keys(f.scores).length?`<div class="row" style="gap:6px">${Object.entries(f.scores).map(([k,v])=>`<span class="small">${objById(k).short}</span>${lvTag(v)}`).join('')}</div>`:''}
+    ${f.at?`<span class="chip" style="margin-top:4px">🌦️ อ้างถึง${esc(f.at)} ในเกม</span>`:''}
+    <span class="k">🎯 Feed Up — เป้าหมาย</span>${Object.keys(f.scores||{}).map(k=>objById(k).text).join(' / ')||'–'}
+    <span class="k">🔍 Feed Back — ตอนนี้ทำได้</span>${esc(f.back)}
+    <span class="k">🚀 Feed Forward — ขั้นต่อไป</span>${esc(f.fwd)}</div>`;
+  return `<div class="fb p"><div class="who"><span>🧑‍🤝‍🧑 เพื่อน: ${esc(f.by)}</span><span class="tiny muted">${thDate(f.date)}</span></div>
+    ${f.at?`<span class="chip">🌦️ อ้างถึง${esc(f.at)} ในเกม</span>`:''}
+    <span class="k">⭐ ดาวดวงที่ 1</span>${esc(f.stars[0])}<span class="k">⭐ ดาวดวงที่ 2</span>${esc(f.stars[1])}<span class="k">🌈 ความหวัง 1 ข้อ</span>${esc(f.wish)}</div>`;
+}
+function viewFb(){
+  if(S.role==='teacher')return viewFbTeacher();
+  const s=stu();
+  let out=`<h2>3. ข้อเสนอแนะออนไลน์ (Online Feedback)</h2>
+  <div class="subtabs"><button data-act="fbMode" data-v="mine" class="${ui.fbMode==='mine'?'on':''}">ข้อเสนอแนะที่ฉันได้รับ${pendingResp(s).length?` <span class="badge">${pendingResp(s).length}</span>`:''}</button><button data-act="fbMode" data-v="peer" class="${ui.fbMode==='peer'?'on':''}">ให้ข้อเสนอแนะเพื่อน (2 ดาว 1 ความหวัง)</button></div>`;
+  if(ui.fbMode==='mine'){
+    const list=s.port.slice().sort((a,b)=>(b.fb.length&&!(b.resp&&b.resp.done))-(a.fb.length&&!(a.resp&&a.resp.done))||b.date.localeCompare(a.date));
+    if(!list.length)return out+`<div class="card empty-state"><div class="big">💬</div><p>เพิ่มหลักฐานในแฟ้มสะสมงานก่อน แล้วอาจารย์และเพื่อนจะให้ข้อเสนอแนะ</p><button class="btn pri" data-act="go" data-v="port">ไปที่แฟ้มสะสมงาน</button></div>`;
+    out+=list.map(e=>`<div class="card" id="fb-${e.id}">
+      <div class="row" style="gap:12px;align-items:flex-start">${imgSrc(e.img)?`<img class="thumb" style="width:90px" src="${imgSrc(e.img)}" alt="">`:''}<div style="flex:1"><h4 style="margin:0">${esc(e.title)}</h4><div class="tiny muted">${thDate(e.date)}</div></div></div>
+      ${e.fb.length?e.fb.map(f=>fbBlock(f,e)).join(''):'<p class="muted small" style="margin-top:10px">⏳ รออาจารย์และเพื่อนให้ข้อเสนอแนะ</p>'}
+      ${e.resp&&e.resp.done?`<div class="fb r"><div class="who"><span>✍️ ฉันปรับปรุงแล้ว</span><span class="tiny muted">${thDate(e.resp.date)}</span></div>${esc(e.resp.text)}</div>`
+      :e.fb.length?`<form data-form="resp" data-id="${e.id}" style="margin-top:12px"><label class="f">ฉันจะนำข้อเสนอแนะไปปรับปรุงอย่างไร *</label>
+        <textarea name="text" required placeholder="เช่น รอบสองจะวางหนองแถวล่าง และไม่รับสินเชื่อถ้ายังไม่มีน้ำสำรอง"></textarea>
+        <div class="row between" style="margin-top:8px"><label class="small"><input type="checkbox" name="done" checked> ปรับปรุงงานเสร็จแล้ว</label><button class="btn pri" type="submit">ส่งคำตอบ</button></div></form>`:''}
+    </div>`).join('');
+    return out;
+  }
+  const others=[];S.students.filter(x=>x.id!==s.id).forEach(x=>x.port.forEach(e=>others.push({e,x})));
+  others.sort((a,b)=>a.e.fb.filter(f=>f.role==='peer').length-b.e.fb.filter(f=>f.role==='peer').length);
+  out+=`<div class="card flat" style="background:var(--gold-l);border-color:var(--gold-b)"><b>กติกา 2 ดาว 1 ความหวัง</b> บอกจุดเด่น 2 ข้อที่เจาะจง และข้อเสนอ 1 ข้อที่ทำได้จริง อ้างฤดูในเกมถ้ามี ใช้คำสุภาพ ชมที่การตัดสินใจ ไม่ใช่ที่ตัวคน</div>`;
+  if(!others.length)return out+`<div class="card empty-state"><p>ยังไม่มีงานของเพื่อน</p></div>`;
+  out+=others.map(({e,x})=>{const given=e.fb.some(f=>f.role==='peer'&&f.by===s.nick);
+    return `<div class="card"><div class="row between"><span class="small"><b>${esc(x.nick)}</b> · ${thDate(e.date)}</span>${given?'<span class="chip ok">✓ ให้ข้อเสนอแนะแล้ว</span>':''}</div>
+    ${entryCard(e,x,false)}
+    ${given?'':ui.peerOpen===e.id?`<form data-form="peer" data-id="${e.id}" data-sid="${x.id}" class="form3">
+      <label class="f">⭐ ดาวดวงที่ 1 — จุดเด่น</label><input type="text" name="s1" required placeholder="ฉันชอบที่... เพราะ...">
+      <label class="f">⭐ ดาวดวงที่ 2 — จุดเด่น</label><input type="text" name="s2" required placeholder="อีกอย่างที่ทำได้ดีคือ...">
+      <label class="f">🌦️ ฤดูในเกม (ถ้ามี)</label><input type="text" name="at" placeholder="เช่น ฤดูที่ 5" style="max-width:180px">
+      <label class="f">🌈 ความหวัง 1 ข้อ — ข้อเสนอที่ทำได้จริง</label><input type="text" name="wish" required minlength="10" placeholder="ถ้าเพิ่ม/ปรับ... จะทำให้...">
+      <div class="row" style="justify-content:flex-end;margin-top:8px"><button type="button" class="btn" data-act="peerOpen" data-v="">ยกเลิก</button><button class="btn pri" type="submit">ส่งให้เพื่อน</button></div></form>`
+      :`<button class="btn" data-act="peerOpen" data-v="${e.id}">⭐⭐🌈 ให้ข้อเสนอแนะ</button>`}
+    </div>`}).join('');
+  return out;
+}
+function viewFbTeacher(){
+  const all=[];S.students.forEach(x=>x.port.forEach(e=>all.push({e,x})));
+  const list=all.filter(({e})=>ui.tFilter==='all'||noTeacherFb(e)).sort((a,b)=>ui.tFilter==='todo'?a.e.date.localeCompare(b.e.date):b.e.date.localeCompare(a.e.date));
+  let out=`<h2>3. ให้ข้อเสนอแนะออนไลน์</h2><p class="small muted">เป้าหมายความทันเวลา: ให้ข้อเสนอแนะภายใน 2 วันหลังนักศึกษาส่งงาน และก่อนเล่นเกมรอบถัดไป งานที่รอนานที่สุดอยู่บนสุด</p>
+  <div class="subtabs"><button data-act="tFilter" data-v="todo" class="${ui.tFilter==='todo'?'on':''}">รออาจารย์ให้ข้อเสนอแนะ (${all.filter(a=>noTeacherFb(a.e)).length})</button><button data-act="tFilter" data-v="all" class="${ui.tFilter==='all'?'on':''}">ทั้งหมด (${all.length})</button></div>`;
+  if(!list.length)return out+`<div class="card empty-state"><div class="big">✅</div><p>ให้ข้อเสนอแนะครบทุกชิ้นแล้ว</p></div>`;
+  out+=list.map(({e,x})=>`<div class="card" id="fb-${e.id}"><div class="row between"><span><b>${esc(x.name)}</b> <span class="tiny muted">รหัส ${x.no}</span></span>${noTeacherFb(e)?(w=>`<span class="chip ${w>=3?'bad':w>=1?'warn':'ok'}">รออาจารย์ ${w} วัน${w>=3?' · เกินเป้า 2 วัน':''}</span>`)(days(e.date,today())):'<span class="chip ok">ให้แล้ว</span>'}</div>
+    ${entryCard(e,x,false)}
+    ${e.fb.map(f=>fbBlock(f,e)).join('')}
+    ${e.resp?`<div class="fb r"><div class="who"><span>✍️ นักศึกษาตอบกลับ</span><span class="tiny muted">${thDate(e.resp.date)}</span></div>${esc(e.resp.text)}</div>`:''}
+    ${ui.tOpen===e.id?teacherForm(e,x):`<button class="btn blue" style="margin-top:10px" data-act="tOpen" data-v="${e.id}">${noTeacherFb(e)?'ให้ข้อเสนอแนะ':'ให้ข้อเสนอแนะเพิ่ม'}</button>`}
+  </div>`).join('');
+  return out;
+}
+function teacherForm(e,x){
+  return `<form data-form="teacher" data-id="${e.id}" data-sid="${x.id}" style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
+    <h4>🎯 Feed Up — ระดับตามรูบริก</h4>
+    ${e.objs.map(id=>{const o=objById(id);return `<div style="margin-bottom:10px"><div class="small"><b>${o.short}</b> — ${o.text}</div>
+      <div class="scorepick">${[1,2,3,4].map(n=>`<label title="${esc(o.lv[n])}"><input type="radio" name="sc_${id}" value="${n}" ${n===3?'':''}><span>${LEVELS[n].icon} ${n} ${LEVELS[n].name}</span></label>`).join('')}</div>
+      <div class="tiny muted">นักศึกษาประเมินตนเอง: ${latestLv(x,id)?LEVELS[latestLv(x,id)].name+' ('+latestLv(x,id)+')':'ยังไม่ประเมิน'}</div></div>`}).join('')}
+    <label class="f">🌦️ ฤดูในเกมที่อ้างถึง (ถ้ามี)</label><input type="text" name="at" placeholder="เช่น ฤดูที่ 3" style="max-width:180px">
+    <label class="f">🔍 Feed Back — ตอนนี้นักศึกษาทำอะไรได้ดี (อ้างอิงหลักฐาน)</label>
+    <textarea name="back" id="tb-${e.id}" required placeholder="เช่น วางหนองในที่ต่ำ และอธิบายเหตุผลได้ชัดเจน"></textarea>
+    <label class="f">🚀 Feed Forward — ขั้นต่อไปที่ทำได้จริง</label>
+    <textarea name="fwd" id="tf-${e.id}" required placeholder="ทำอะไรต่อจึงจะขึ้นระดับถัดไป"></textarea>
+    <div class="hint">คลังข้อความ (แตะเพื่อเติม):</div>
+    <div class="row" style="gap:6px;margin-top:4px">${BANK.map(b=>`<button type="button" class="chip" data-act="bank" data-t="tf-${e.id}" data-txt="${esc(b)}">${esc(b)}</button>`).join('')}</div>
+    <div class="row" style="justify-content:flex-end;margin-top:12px"><button type="button" class="btn" data-act="tOpen" data-v="">ยกเลิก</button><button class="btn blue" type="submit">ส่งข้อเสนอแนะ</button></div>
+  </form>`;
+}
+
+/* ============ รายงาน ============ */
+function viewReport(){
+  const s=stu(),pre=s.self.pre,post=s.self.post,pq=quizScore(pre),qq=quizScore(post);
+  const fbT=s.port.reduce((a,e)=>a+e.fb.filter(f=>f.role==='teacher').length,0),fbP=s.port.reduce((a,e)=>a+e.fb.filter(f=>f.role==='peer').length,0);
+  const resp=s.port.filter(e=>e.resp&&e.resp.done).length;
+  const given=S.students.reduce((a,x)=>a+x.port.reduce((b,e)=>b+e.fb.filter(f=>f.role==='peer'&&f.by===s.nick).length,0),0);
+  return `<div class="row between noprint" style="margin-bottom:12px"><h2 style="margin:0">รายงานพัฒนาการ</h2>${FRAMED?'':'<button class="btn pri" data-act="print">🖨️ พิมพ์ / บันทึกเป็น PDF</button>'}</div>
+  <div class="card">
+    <div class="row between"><div><h3 style="margin:0">${esc(s.name)} <span class="small muted">รหัส ${s.no}</span></h3><div class="small muted">${UNIT.course} · ${UNIT.name}</div></div><div class="small muted">ข้อมูล ณ ${thDate(today())}</div></div>
+    <hr>
+    <div class="tw"><table><thead><tr><th>จุดประสงค์</th><th>ด้าน</th><th>ก่อนเรียน</th><th>หลังเรียน</th><th>อาจารย์ประเมิน</th><th>พัฒนาการ</th><th>ความแม่นยำการประเมินตน</th><th>หลักฐาน</th></tr></thead><tbody>
+    ${OBJ.map(o=>{const a=pre.lv[o.id]||0,b=post.done?post.lv[o.id]||0:0,t=teacherLv(s,o.id),c=calib(b||a,t);
+      return `<tr><td>${o.short}</td><td>${o.dom} · ${o.clo}</td><td>${lvTag(a)}</td><td>${post.done?lvTag(b):'–'}</td><td>${t?lvTag(t):'–'}</td><td>${a&&b?`<b style="color:var(--green-d)">${b-a>0?'+':''}${b-a}</b>`:'–'}</td><td>${c?`<span class="chip ${c.c}">${c.t}</span>`:'–'}</td><td>${s.port.filter(e=>e.objs.includes(o.id)).length}</td></tr>`}).join('')}
+    </tbody></table></div>
+    <div class="grid g4" style="margin-top:14px">
+      <div class="stat"><div class="v">${pq.n?pq.c:'–'} → ${qq.n?qq.c:'–'}</div><div class="l">แบบทดสอบ 5 ข้อ ก่อน → หลัง</div></div>
+      <div class="stat"><div class="v">${s.port.length}</div><div class="l">หลักฐานในแฟ้ม</div></div>
+      <div class="stat"><div class="v">${fbT} / ${fbP}</div><div class="l">ข้อเสนอแนะจากอาจารย์ / เพื่อน</div></div>
+      <div class="stat"><div class="v">${resp}</div><div class="l">งานที่ปรับปรุงตามข้อเสนอแนะ</div></div>
+      <div class="stat"><div class="v">${given}</div><div class="l">ข้อเสนอแนะที่ให้เพื่อน</div></div>
+    </div>
+    ${pre.goal?`<hr><p><b>🎯 เป้าหมายที่ตั้งไว้:</b> ${esc(pre.goal)}</p>`:''}
+    ${post.done&&post.doubt?`<p><b>❓ สิ่งที่ยังสงสัยหลังเรียน:</b> ${esc(post.doubt)}</p>`:''}
+    ${post.done&&post.grow?`<p><b>🌱 สะท้อนพัฒนาการ:</b> ${esc(post.grow)}</p>`:''}
+  </div>
+  <div class="card"><h3>เส้นทางพัฒนาการรายจุดประสงค์</h3>${growthPath(s)}</div>
+  <h3>หลักฐานและเส้นทางการปรับปรุง</h3>
+  ${s.port.length?s.port.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(e=>`<div class="card"><div class="row between"><b>${esc(e.title)}</b><span class="tiny muted">${thDate(e.date)}</span></div>
+    <div class="small">${esc(e.so)}</div>${e.fb.map(f=>fbBlock(f,e)).join('')}${e.resp?`<div class="fb r"><b>✍️ การปรับปรุง:</b> ${esc(e.resp.text)}</div>`:''}</div>`).join(''):'<p class="muted">ยังไม่มีหลักฐาน</p>'}`;
+}
+
+/* ============ วาดหน้าจอ ============ */
+function render(){
+  renderHeader();
+  const v=document.getElementById('view');
+  v.innerHTML=({home:viewHome,self:viewSelf,port:viewPort,fb:viewFb,report:viewReport}[ui.tab]||viewHome)();
+  const imgIn=document.getElementById('imgIn');
+  if(imgIn)imgIn.addEventListener('change',async ev=>{const f=ev.target.files[0];if(!f)return;try{ui.draftImg=await readImg(f);keepForm(()=>render())}catch(e){toast('อ่านไฟล์ภาพไม่ได้')}});
+}
+function keepForm(fn){ // เก็บค่าที่พิมพ์ไว้ในฟอร์มเพิ่มหลักฐานก่อนวาดใหม่
+  const f=document.querySelector('form[data-form="add"]');const saved={};
+  if(f){[...f.elements].forEach(el=>{if(!el.name)return;if(el.type==='checkbox'){if(el.checked)(saved[el.name]=saved[el.name]||[]).push(el.value)}else saved[el.name]=el.value})}
+  fn();
+  const g=document.querySelector('form[data-form="add"]');
+  if(g)[...g.elements].forEach(el=>{if(!el.name||saved[el.name]===undefined)return;if(el.type==='checkbox')el.checked=saved[el.name].includes(el.value);else el.value=saved[el.name]});
+}
+function readImg(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const m=900,sc=Math.min(1,m/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.72))};im.onerror=rej;im.src=fr.result};fr.onerror=rej;fr.readAsDataURL(file)})}
+function scrollTop(){window.scrollTo({top:0,behavior:'instant'})}
+
+/* ============ เหตุการณ์ ============ */
+// ยืนยันด้วยการกดซ้ำภายใน 4 วินาที (หน้าเว็บที่เผยแพร่ไม่แสดงกล่อง confirm)
+function armed(e,msg){const b=e.target.closest('[data-act]');if(b.dataset.armed==='1')return true;
+  const old=b.textContent;b.dataset.armed='1';b.textContent=msg;
+  setTimeout(()=>{if(b.isConnected){b.dataset.armed='';b.textContent=old}},4000);return false}
+const FRAMED=(()=>{try{return window.self!==window.top}catch(e){return true}})();
+const ACT={
+  role(d){S.role=d.v;ui.tab='home';ui.phase=null;save();render();scrollTop()},
+  tab(d){ui.tab=d.v;ui.phase=null;ui.showAdd=false;render();scrollTop()},
+  go(d){ui.tab=d.v;ui.phase=d.ph||null;render();scrollTop()},
+  viewstu(d){S.cur=d.v;ui.tab='report';save();render();scrollTop()},
+  phase(d){ui.phase=d.v;render()},
+  lv(d){const ph=stu().self[ui.phase];ph.lv[d.o]=+d.v;save();render()},
+  quiz(d){const ph=stu().self[ui.phase];ph.quiz[d.q]=+d.v;save();render()},
+  submitSelf(){const s=stu(),ph=s.self[ui.phase];
+    const miss=OBJ.filter(o=>!ph.lv[o.id]);if(miss.length){toast('ยังไม่ได้เลือกระดับ: '+miss.map(o=>o.short).join(', '));return}
+    if(quizScore(ph).n<QUIZ.length){toast('ตอบแบบทดสอบให้ครบ 5 ข้อก่อนนะ');return}
+    if(ui.phase==='post'&&!(ph.grow||'').trim()){toast('เขียนสะท้อนพัฒนาการของตัวเองก่อนส่งนะ');return}
+    ph.done=true;ph.date=today();if(ui.phase==='post'&&!ph.goal)ph.goal=s.self.pre.goal;save();render();scrollTop();toast('ส่งแบบประเมินแล้ว ดูผลและคำแนะนำด้านบน')},
+  redoSelf(){const ph=stu().self[ui.phase];ph.done=false;ph.quiz={};save();render()},
+  toggleAdd(){ui.showAdd=!ui.showAdd;ui.draftImg='';render()},
+  filter(d){ui.filter=d.v;render()},
+  delEntry(d,e){if(!armed(e,'กดอีกครั้งเพื่อลบ'))return;const s=stu();s.port=s.port.filter(e=>e.id!==d.v);save();render();toast('ลบแล้ว')},
+  openFb(d){ui.tab='fb';ui.fbMode='mine';if(S.role==='teacher'){ui.tFilter='all';ui.tOpen=d.v}render();const el=document.getElementById('fb-'+d.v);if(el)el.scrollIntoView({block:'start'})},
+  fbMode(d){ui.fbMode=d.v;render()},
+  peerOpen(d){ui.peerOpen=d.v||null;render()},
+  tOpen(d){ui.tOpen=d.v||null;render()},
+  tFilter(d){ui.tFilter=d.v;render()},
+  bank(d){const t=document.getElementById(d.t);if(!t)return;t.value=(t.value.trim()?t.value.trim()+' ':'')+d.txt;t.focus()},
+  print(){window.print()},
+  reset(d,e){if(!armed(e,'กดอีกครั้งเพื่อยืนยันการล้างข้อมูลทั้งหมด'))return;S=seed();save();Object.assign(ui,{tab:'home',phase:null,showAdd:false,filter:'all'});render();scrollTop();toast('กลับเป็นข้อมูลตัวอย่างแล้ว')}
+};
+document.addEventListener('click',e=>{const a=e.target.closest('[data-act]');if(!a||a.disabled)return;const f=ACT[a.dataset.act];if(f){e.preventDefault();f(a.dataset,e)}});
+document.addEventListener('input',e=>{const b=e.target.dataset&&e.target.dataset.bind;if(!b)return;const ph=stu().self[ui.phase];const[k,o]=b.split(':');if(k==='why')ph.why[o]=e.target.value;else ph[k]=e.target.value;save()});
+document.getElementById('who').addEventListener('change',e=>{S.cur=e.target.value;ui.phase=null;ui.showAdd=false;ui.peerOpen=null;save();render()});
+document.addEventListener('submit',e=>{
+  const f=e.target,kind=f.dataset.form;if(!kind)return;e.preventDefault();const fd=new FormData(f);
+  if(kind==='add'){
+    const objs=fd.getAll('objs');if(!objs.length){toast('เลือกจุดประสงค์อย่างน้อย 1 ข้อ');return}
+    const s=stu();s.port.push({id:'e'+(++S.seq),date:today(),title:fd.get('title').trim(),type:fd.get('type'),link:fd.get('link').trim(),img:ui.draftImg,objs,what:fd.get('what').trim(),so:fd.get('so').trim(),now:fd.get('now').trim(),fb:[],resp:null});
+    if(!save()){s.port.pop();return}
+    ui.showAdd=false;ui.draftImg='';ui.filter='all';render();toast('บันทึกลงแฟ้มสะสมงานแล้ว');
+  }
+  if(kind==='resp'){
+    const e2=stu().port.find(x=>x.id===f.dataset.id);e2.resp={text:fd.get('text').trim(),date:today(),done:!!fd.get('done')};save();render();toast('ส่งคำตอบแล้ว อาจารย์จะเห็นการปรับปรุงของเธอ');
+  }
+  if(kind==='peer'){
+    const x=stu(f.dataset.sid),e2=x.port.find(y=>y.id===f.dataset.id);
+    e2.fb.push({id:'f'+(++S.seq),role:'peer',by:stu().nick,date:today(),at:(fd.get('at')||'').trim(),stars:[fd.get('s1').trim(),fd.get('s2').trim()],wish:fd.get('wish').trim()});
+    ui.peerOpen=null;save();render();toast('ส่งข้อเสนอแนะให้ '+x.nick+' แล้ว ขอบคุณที่แบ่งปัน 🙏');
+  }
+  if(kind==='teacher'){
+    const x=stu(f.dataset.sid),e2=x.port.find(y=>y.id===f.dataset.id);const scores={};
+    for(const id of e2.objs){const v=fd.get('sc_'+id);if(!v){toast('ให้ระดับรูบริกให้ครบทุกจุดประสงค์');return}scores[id]=+v}
+    e2.fb.push({id:'f'+(++S.seq),role:'teacher',by:'อาจารย์ผู้สอน',date:today(),at:(fd.get('at')||'').trim(),scores,back:fd.get('back').trim(),fwd:fd.get('fwd').trim()});
+    if(e2.resp&&e2.resp.done)e2.resp.done=false;
+    ui.tOpen=null;save();render();toast('ส่งข้อเสนอแนะถึง '+x.nick+' แล้ว');
+  }
+});
+
+load();render();
+</script>
+</body>
+</html>
